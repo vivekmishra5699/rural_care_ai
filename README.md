@@ -133,10 +133,10 @@ docai-assistant/
 ## 📊 Screenshots
 
 <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
-  <img src="https://via.placeholder.com/400x250?text=Doctor+Dashboard" alt="Doctor Dashboard" width="400">
-  <img src="https://via.placeholder.com/400x250?text=Patient+Portal" alt="Patient Portal" width="400">
-  <img src="https://via.placeholder.com/400x250?text=AI+Analysis" alt="AI Analysis" width="400">
-  <img src="https://via.placeholder.com/400x250?text=Patient+Records" alt="Patient Records" width="400">
+  <img src="https://github.com/user-attachments/assets/c189099b-a2db-4bb3-a52f-8c6027429b9c" alt="Doctor Dashboard" width="400">
+  <img src="https://github.com/user-attachments/assets/25b02c17-6f0a-43e9-9741-5f78d4d69fea" alt="Patient Portal" width="400">
+  <img src="https://github.com/user-attachments/assets/4c45ce72-effd-48a8-b616-7ee9acfae244" alt="AI Analysis" width="400">
+  <img src="https://github.com/user-attachments/assets/0bd5880c-4d33-43d8-a9ca-9e6ca3263a21" alt="Patient Records" width="400">
 </div>
 
 ## 🤝 Contributing
