@@ -1,0 +1,699 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Page Header with Actions -->
+<div class="animate__animated animate__fadeIn mb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-display font-bold text-surface-900 flex items-center gap-2">
+                <i class="fas fa-clipboard-list text-primary-600"></i>
+                <span>My Patient Visits</span>
+            </h1>
+            <p class="text-surface-500 mt-1">All consultations and patient visits you've conducted</p>
+        </div>
+        
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-surface-400"></i>
+            </div>
+            <input type="text" id="patientSearch" class="form-control pl-10" placeholder="Search patients...">
+        </div>
+    </div>
+</div>
+
+<!-- Filter tabs with modern styling -->
+<div class="flex border-b border-surface-200 mb-6">
+    <button id="my-patients-tab" class="tab-button active flex items-center gap-2 px-6 py-3 font-medium border-b-2 border-primary-600">
+        <i class="fas fa-user-md text-primary-600"></i>
+        <span>My Patients</span>
+    </button>
+    <button id="other-patients-tab" class="tab-button flex items-center gap-2 px-6 py-3 font-medium border-b-2 border-transparent">
+        <i class="fas fa-users text-surface-400"></i>
+        <span>Other Doctors' Patients</span>
+    </button>
+</div>
+
+<!-- Tab Content -->
+<div class="tab-content">
+    <!-- My Patients Tab -->
+    <div id="my-patients-panel" class="tab-panel active">
+        <div class="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
+            <div class="p-4 border-b border-surface-100">
+                <div class="flex items-center">
+                    <i class="fas fa-user-circle text-primary-600 text-lg mr-2"></i>
+                    <h5 class="font-medium text-surface-900">My Patients with Visits</h5>
+                </div>
+            </div>
+            
+            <div class="divide-y divide-surface-100">
+                {% set my_patients_found = false %}
+                {% for patient_id, patient_info in visits_by_patient.items() %}
+                    {% if patient_info.is_my_patient %}
+                        {% set my_patients_found = true %}
+                        <div class="patient-item p-4 hover:bg-surface-50 transition-colors">
+                            <!-- Patient Header (Clickable) -->
+                            <div class="flex justify-between items-center cursor-pointer" data-patient-id="{{ patient_id }}">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-semibold border border-primary-200">
+                                        {{ patient_info.first_name[0] }}{{ patient_info.last_name[0] }}
+                                    </div>
+                                    <div class="ml-3">
+                                        <h6 class="font-medium text-surface-900">{{ patient_info.first_name }} {{ patient_info.last_name }}</h6>
+                                        <div class="text-sm text-surface-500">{{ patient_info.visits|length }} visit(s)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-sm font-medium">
+                                        {{ patient_info.visits|length }}
+                                    </span>
+                                    <i class="fas fa-chevron-down ml-3 text-surface-400 patient-toggle-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Patient Visits (Hidden by default) -->
+                            <div class="patient-visits mt-4 hidden">
+                                <div class="bg-surface-50 rounded-lg overflow-hidden border border-surface-100">
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-surface-200">
+                                            <thead class="bg-surface-100">
+                                                <tr>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Date</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Chief Complaint</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Status</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-surface-100">
+                                                {% for visit in patient_info.visits %}
+                                                <tr class="hover:bg-surface-50">
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        <div class="flex items-center">
+                                                            <div class="w-8 h-8 rounded-full bg-primary-50 text-primary-700 flex items-center justify-center font-medium mr-2 text-xs">
+                                                                {{ visit.date.strftime('%d') }}
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-sm font-medium text-surface-900">{{ visit.date.strftime('%b %d, %Y') }}</div>
+                                                                <div class="text-xs text-surface-500">{{ visit.date.strftime('%I:%M %p') }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="text-sm text-surface-900 truncate max-w-xs">{{ visit.chief_complaint }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        {% if visit.status == 'completed' %}
+                                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Completed</span>
+                                                        {% else %}
+                                                        <span class="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800 font-medium">In Progress</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        <div class="flex gap-2">
+                                                            <button class="view-visit-btn px-3 py-1 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded-md transition"
+                                                                    data-visit-id="visit-{{ visit.id }}">
+                                                                <i class="fas fa-eye mr-1"></i>View
+                                                            </button>
+                                                            {% if visit.status == 'initial' %}
+                                                            <a href="{{ url_for('complete_visit', visit_id=visit.id) }}" 
+                                                               class="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded-md transition">
+                                                                <i class="fas fa-check mr-1"></i>Complete
+                                                            </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Visit Details Row (Hidden by default) -->
+                                                <tr id="visit-{{ visit.id }}" class="visit-details bg-surface-50 hidden">
+                                                    <td colspan="4" class="p-4">
+                                                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                                                            <div class="p-4 border-b border-surface-100 flex justify-between items-center">
+                                                                <h6 class="font-medium text-primary-700 flex items-center">
+                                                                    <i class="fas fa-clipboard-check mr-2"></i>
+                                                                    Visit Details
+                                                                </h6>
+                                                                <button class="close-visit-btn text-surface-400 hover:text-surface-600 transition"
+                                                                        data-visit-id="visit-{{ visit.id }}">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            <div class="p-4">
+                                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                                    <!-- Vitals Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-primary-700 mb-3">Vital Signs</h6>
+                                                                        <div class="space-y-2 text-sm">
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Temperature</span>
+                                                                                <span class="font-medium">{{ visit.temperature }}°C</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Blood Pressure</span>
+                                                                                <span class="font-medium">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }} mmHg</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Heart Rate</span>
+                                                                                <span class="font-medium">{{ visit.heart_rate }} bpm</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Respiratory Rate</span>
+                                                                                <span class="font-medium">{{ visit.respiratory_rate }} br/min</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">O2 Saturation</span>
+                                                                                <span class="font-medium">{{ visit.oxygen_saturation }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Symptoms Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-primary-700 mb-3">Symptoms</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Chief Complaint:</div>
+                                                                                <div>{{ visit.chief_complaint }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Symptoms:</div>
+                                                                                <div>{{ visit.symptoms }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Duration:</div>
+                                                                                <div>{{ visit.duration_of_symptoms }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Severity:</div>
+                                                                                <div>{{ visit.severity }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                {% if visit.status == 'completed' %}
+                                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <!-- Diagnosis Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-primary-700 mb-3">Diagnosis & Treatment</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Diagnosis:</div>
+                                                                                <div>{{ visit.diagnosis }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Treatment Plan:</div>
+                                                                                <div>{{ visit.treatment_plan }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Medications Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-primary-700 mb-3">Medications & Notes</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Prescribed Medications:</div>
+                                                                                <div>{{ visit.prescribed_medications or "None" }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Additional Notes:</div>
+                                                                                <div>{{ visit.notes or "None" }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% else %}
+                                                                <div class="bg-primary-50 border-l-4 border-primary-500 p-4 rounded-r-lg mt-2">
+                                                                    <div class="flex items-start">
+                                                                        <i class="fas fa-info-circle text-primary-600 mt-0.5 mr-2"></i>
+                                                                        <div>
+                                                                            <p class="text-primary-800 text-sm mb-1">This visit is still in progress.</p>
+                                                                            <a href="{{ url_for('complete_visit', visit_id=visit.id) }}" 
+                                                                               class="text-primary-700 hover:text-primary-900 text-sm font-medium">
+                                                                                Complete this visit →
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if not my_patients_found %}
+                <div class="text-center py-10">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-surface-100 flex items-center justify-center text-surface-400 mb-4">
+                        <i class="fas fa-user-md text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-surface-700 mb-1">No visits found</h3>
+                    <p class="text-surface-500">You haven't conducted any visits for your own patients yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Other Patients Tab -->
+    <div id="other-patients-panel" class="tab-panel hidden">
+        <div class="bg-white rounded-xl shadow-sm mb-6 overflow-hidden">
+            <div class="p-4 border-b border-surface-100">
+                <div class="flex items-center">
+                    <i class="fas fa-user-plus text-secondary-600 text-lg mr-2"></i>
+                    <h5 class="font-medium text-surface-900">Other Doctors' Patients</h5>
+                </div>
+            </div>
+            
+            <div class="divide-y divide-surface-100">
+                {% set other_patients_found = false %}
+                {% for patient_id, patient_info in visits_by_patient.items() %}
+                    {% if not patient_info.is_my_patient %}
+                        {% set other_patients_found = true %}
+                        <div class="patient-item p-4 hover:bg-surface-50 transition-colors">
+                            <!-- Patient Header (Clickable) -->
+                            <div class="flex justify-between items-center cursor-pointer" data-patient-id="other-{{ patient_id }}">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center font-semibold border border-secondary-200">
+                                        {{ patient_info.first_name[0] }}{{ patient_info.last_name[0] }}
+                                    </div>
+                                    <div class="ml-3">
+                                        <h6 class="font-medium text-surface-900">
+                                            {{ patient_info.first_name }} {{ patient_info.last_name }}
+                                            <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-secondary-100 text-secondary-800">
+                                                Dr. {{ patient_info.doctor_name }}
+                                            </span>
+                                        </h6>
+                                        <div class="text-sm text-surface-500">{{ patient_info.visits|length }} visit(s)</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="px-3 py-1 rounded-full bg-secondary-100 text-secondary-700 text-sm font-medium">
+                                        {{ patient_info.visits|length }}
+                                    </span>
+                                    <i class="fas fa-chevron-down ml-3 text-surface-400 patient-toggle-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Patient Visits (Hidden by default) -->
+                            <div class="patient-visits mt-4 hidden">
+                                <div class="bg-surface-50 rounded-lg overflow-hidden border border-surface-100">
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-surface-200">
+                                            <thead class="bg-surface-100">
+                                                <tr>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Date</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Chief Complaint</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Status</th>
+                                                    <th class="px-4 py-3 text-left text-xs font-medium text-surface-500 uppercase tracking-wider">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-surface-100">
+                                                {% for visit in patient_info.visits %}
+                                                <tr class="hover:bg-surface-50">
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        <div class="flex items-center">
+                                                            <div class="w-8 h-8 rounded-full bg-secondary-50 text-secondary-700 flex items-center justify-center font-medium mr-2 text-xs">
+                                                                {{ visit.date.strftime('%d') }}
+                                                            </div>
+                                                            <div>
+                                                                <div class="text-sm font-medium text-surface-900">{{ visit.date.strftime('%b %d, %Y') }}</div>
+                                                                <div class="text-xs text-surface-500">{{ visit.date.strftime('%I:%M %p') }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="text-sm text-surface-900 truncate max-w-xs">{{ visit.chief_complaint }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        {% if visit.status == 'completed' %}
+                                                        <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Completed</span>
+                                                        {% else %}
+                                                        <span class="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800 font-medium">In Progress</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="px-4 py-3 whitespace-nowrap">
+                                                        <div class="flex gap-2">
+                                                            <button class="view-visit-btn px-3 py-1 text-xs bg-secondary-600 hover:bg-secondary-700 text-white rounded-md transition"
+                                                                    data-visit-id="other-visit-{{ visit.id }}">
+                                                                <i class="fas fa-eye mr-1"></i>View
+                                                            </button>
+                                                            {% if visit.status == 'initial' %}
+                                                            <a href="{{ url_for('complete_visit', visit_id=visit.id) }}" 
+                                                               class="px-3 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded-md transition">
+                                                                <i class="fas fa-check mr-1"></i>Complete
+                                                            </a>
+                                                            {% endif %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                
+                                                <!-- Visit Details Row (Hidden by default) -->
+                                                <tr id="other-visit-{{ visit.id }}" class="visit-details bg-surface-50 hidden">
+                                                    <td colspan="4" class="p-4">
+                                                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                                                            <div class="p-4 border-b border-surface-100 flex justify-between items-center">
+                                                                <h6 class="font-medium text-secondary-700 flex items-center">
+                                                                    <i class="fas fa-clipboard-check mr-2"></i>
+                                                                    Visit Details
+                                                                </h6>
+                                                                <button class="close-visit-btn text-surface-400 hover:text-surface-600 transition"
+                                                                        data-visit-id="other-visit-{{ visit.id }}">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                            
+                                                            <div class="p-4">
+                                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                                    <!-- Vitals Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-secondary-700 mb-3">Vital Signs</h6>
+                                                                        <div class="space-y-2 text-sm">
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Temperature</span>
+                                                                                <span class="font-medium">{{ visit.temperature }}°C</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Blood Pressure</span>
+                                                                                <span class="font-medium">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }} mmHg</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Heart Rate</span>
+                                                                                <span class="font-medium">{{ visit.heart_rate }} bpm</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">Respiratory Rate</span>
+                                                                                <span class="font-medium">{{ visit.respiratory_rate }} br/min</span>
+                                                                            </div>
+                                                                            <div class="flex justify-between">
+                                                                                <span class="text-surface-600">O2 Saturation</span>
+                                                                                <span class="font-medium">{{ visit.oxygen_saturation }}%</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Symptoms Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-secondary-700 mb-3">Symptoms</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Chief Complaint:</div>
+                                                                                <div>{{ visit.chief_complaint }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Symptoms:</div>
+                                                                                <div>{{ visit.symptoms }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Duration:</div>
+                                                                                <div>{{ visit.duration_of_symptoms }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Severity:</div>
+                                                                                <div>{{ visit.severity }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                {% if visit.status == 'completed' %}
+                                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                    <!-- Diagnosis Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-secondary-700 mb-3">Diagnosis & Treatment</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Diagnosis:</div>
+                                                                                <div>{{ visit.diagnosis }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Treatment Plan:</div>
+                                                                                <div>{{ visit.treatment_plan }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Medications Card -->
+                                                                    <div class="bg-surface-50 p-4 rounded-lg border border-surface-100">
+                                                                        <h6 class="text-sm font-medium text-secondary-700 mb-3">Medications & Notes</h6>
+                                                                        <div class="space-y-3 text-sm">
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Prescribed Medications:</div>
+                                                                                <div>{{ visit.prescribed_medications or "None" }}</div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="text-surface-500 text-xs mb-1">Additional Notes:</div>
+                                                                                <div>{{ visit.notes or "None" }}</div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% else %}
+                                                                <div class="bg-secondary-50 border-l-4 border-secondary-500 p-4 rounded-r-lg mt-2">
+                                                                    <div class="flex items-start">
+                                                                        <i class="fas fa-info-circle text-secondary-600 mt-0.5 mr-2"></i>
+                                                                        <div>
+                                                                            <p class="text-secondary-800 text-sm mb-1">This visit is still in progress.</p>
+                                                                            <a href="{{ url_for('complete_visit', visit_id=visit.id) }}" 
+                                                                               class="text-secondary-700 hover:text-secondary-900 text-sm font-medium">
+                                                                                Complete this visit →
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if not other_patients_found %}
+                <div class="text-center py-10">
+                    <div class="w-16 h-16 mx-auto rounded-full bg-surface-100 flex items-center justify-center text-surface-400 mb-4">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-surface-700 mb-1">No visits found</h3>
+                    <p class="text-surface-500">You haven't conducted any visits for other doctors' patients yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom styles for this page -->
+<style>
+    /* Tab styling */
+    .tab-button {
+        position: relative;
+        transition: all 0.2s ease;
+        color: var(--tw-surface-600);
+    }
+    
+    .tab-button:hover {
+        color: var(--tw-primary-700);
+    }
+    
+    .tab-button.active {
+        color: var(--tw-primary-700);
+        border-bottom-color: var(--tw-primary-600);
+    }
+    
+    .tab-button:not(.active) {
+        border-bottom-color: transparent;
+    }
+    
+    .tab-panel {
+        display: none;
+    }
+    
+    .tab-panel.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Hover effects */
+    .patient-item:hover .patient-toggle-icon {
+        color: var(--tw-surface-600);
+    }
+    
+    /* Transitions */
+    .patient-visits {
+        transition: all 0.3s ease-in-out;
+    }
+    
+    /* Patient toggle icon rotation */
+    .rotate-icon {
+        transform: rotate(180deg);
+        transition: transform 0.3s ease;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and panels
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabPanels.forEach(panel => panel.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding panel
+                const panelId = button.id.replace('-tab', '-panel');
+                document.getElementById(panelId).classList.add('active');
+            });
+        });
+        
+        // Patient item click to toggle visits visibility
+        const patientHeaders = document.querySelectorAll('[data-patient-id]');
+        
+        patientHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const patientId = this.getAttribute('data-patient-id');
+                const visitsContainer = this.closest('.patient-item').querySelector('.patient-visits');
+                const icon = this.querySelector('.patient-toggle-icon');
+                
+                // Toggle visibility
+                if (visitsContainer.classList.contains('hidden')) {
+                    visitsContainer.classList.remove('hidden');
+                    icon.classList.add('rotate-icon');
+                } else {
+                    visitsContainer.classList.add('hidden');
+                    icon.classList.remove('rotate-icon');
+                }
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('patientSearch');
+        const patientItems = document.querySelectorAll('.patient-item');
+        
+        searchInput.addEventListener('input', function() {
+            const searchText = this.value.toLowerCase().trim();
+            
+            patientItems.forEach(item => {
+                const patientName = item.querySelector('h6').textContent.toLowerCase();
+                if (patientName.includes(searchText)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+            
+            // Check if any items are visible in each tab
+            checkEmptyTabs();
+        });
+        
+        // Function to check if tabs are empty after filtering
+        function checkEmptyTabs() {
+            const myPatientsPanel = document.getElementById('my-patients-panel');
+            const otherPatientsPanel = document.getElementById('other-patients-panel');
+            
+            const visibleMyPatients = myPatientsPanel.querySelectorAll('.patient-item:not(.hidden)');
+            const visibleOtherPatients = otherPatientsPanel.querySelectorAll('.patient-item:not(.hidden)');
+            
+            // Show empty message if needed for My Patients tab
+            let myPatientsEmpty = myPatientsPanel.querySelector('.text-center');
+            if (visibleMyPatients.length === 0 && !myPatientsEmpty) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'text-center py-10 empty-search-msg';
+                emptyMsg.innerHTML = `
+                    <div class="w-16 h-16 mx-auto rounded-full bg-surface-100 flex items-center justify-center text-surface-400 mb-4">
+                        <i class="fas fa-search text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-surface-700 mb-1">No matches found</h3>
+                    <p class="text-surface-500">No patients match your search criteria</p>
+                `;
+                myPatientsPanel.appendChild(emptyMsg);
+            } else if (visibleMyPatients.length > 0 && myPatientsPanel.querySelector('.empty-search-msg')) {
+                myPatientsPanel.querySelector('.empty-search-msg').remove();
+            }
+            
+            // Show empty message if needed for Other Patients tab
+            let otherPatientsEmpty = otherPatientsPanel.querySelector('.text-center');
+            if (visibleOtherPatients.length === 0 && !otherPatientsEmpty) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'text-center py-10 empty-search-msg';
+                emptyMsg.innerHTML = `
+                    <div class="w-16 h-16 mx-auto rounded-full bg-surface-100 flex items-center justify-center text-surface-400 mb-4">
+                        <i class="fas fa-search text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-surface-700 mb-1">No matches found</h3>
+                    <p class="text-surface-500">No patients match your search criteria</p>
+                `;
+                otherPatientsPanel.appendChild(emptyMsg);
+            } else if (visibleOtherPatients.length > 0 && otherPatientsPanel.querySelector('.empty-search-msg')) {
+                otherPatientsPanel.querySelector('.empty-search-msg').remove();
+            }
+        }
+        
+        // Visit view/close functionality
+        const viewButtons = document.querySelectorAll('.view-visit-btn');
+        const closeButtons = document.querySelectorAll('.close-visit-btn');
+        
+        // When View is clicked, show the details row
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering the patient-item toggle
+                
+                const visitId = this.getAttribute('data-visit-id');
+                const detailsRow = document.getElementById(visitId);
+                
+                // Hide any open visit details first
+                document.querySelectorAll('.visit-details').forEach(row => {
+                    if (row.id !== visitId) {
+                        row.classList.add('hidden');
+                    }
+                });
+                
+                // Show this visit's details
+                detailsRow.classList.remove('hidden');
+                
+                // Scroll into view
+                setTimeout(() => {
+                    detailsRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
+        });
+        
+        // When Close is clicked, hide the details row
+        closeButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent triggering other events
+                
+                const visitId = this.getAttribute('data-visit-id');
+                const detailsRow = document.getElementById(visitId);
+                detailsRow.classList.add('hidden');
+            });
+        });
+    });
+</script>
+{% endblock %}

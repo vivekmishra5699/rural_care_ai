@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-clipboard-check text-primary me-2"></i>Complete Visit</h2>
+            <p class="text-muted mb-0">Patient: {{ patient.first_name }} {{ patient.last_name }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('view_patient', id=patient.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Patient
+            </a>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex align-items-center">
+                    <i class="fas fa-user-md text-primary me-2"></i>
+                    <h4 class="card-title mb-0">Patient Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-heartbeat me-2"></i>Vital Signs
+                        </h5>
+                        <div class="row">
+                            <div class="col-sm-6 mb-2">
+                                <div class="small text-muted">Temperature</div>
+                                <div class="fw-bold">{{ visit.temperature }}°C</div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="small text-muted">Blood Pressure</div>
+                                <div class="fw-bold">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }} mmHg</div>
+                            </div>
+                            <div class="col-sm-4 mb-2">
+                                <div class="small text-muted">Heart Rate</div>
+                                <div class="fw-bold">{{ visit.heart_rate }} bpm</div>
+                            </div>
+                            <div class="col-sm-4 mb-2">
+                                <div class="small text-muted">Respiratory Rate</div>
+                                <div class="fw-bold">{{ visit.respiratory_rate }} br/min</div>
+                            </div>
+                            <div class="col-sm-4 mb-2">
+                                <div class="small text-muted">O₂ Saturation</div>
+                                <div class="fw-bold">{{ visit.oxygen_saturation }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-notes-medical me-2"></i>Symptoms
+                        </h5>
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <div class="small text-muted">Chief Complaint</div>
+                                <div class="fw-bold">{{ visit.chief_complaint }}</div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <div class="small text-muted">Symptoms</div>
+                                <div>{{ visit.symptoms }}</div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="small text-muted">Duration</div>
+                                <div>{{ visit.duration_of_symptoms }}</div>
+                            </div>
+                            <div class="col-sm-6 mb-2">
+                                <div class="small text-muted">Severity</div>
+                                <div>{{ visit.severity }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex align-items-center">
+                    <i class="fas fa-robot text-primary me-2"></i>
+                    <h4 class="card-title mb-0">AI Analysis Results</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-search-plus me-2"></i>Suggested Diagnoses
+                        </h5>
+                        <div class="ai-response bg-light rounded p-3 mb-3" id="suggested-diagnoses">
+                            {{ visit.ai_suggested_diseases | safe }}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-prescription-bottle-alt me-2"></i>Recommended Treatments
+                        </h5>
+                        <div class="ai-response bg-light rounded p-3" id="suggested-treatments">
+                            {{ visit.ai_suggested_treatments | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex align-items-center">
+            <i class="fas fa-stethoscope text-primary me-2"></i>
+            <h4 class="card-title mb-0">Doctor's Assessment</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="diagnosis" class="form-label fw-bold">
+                            <i class="fas fa-clipboard-check text-primary me-1"></i> Final Diagnosis <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="diagnosis" name="diagnosis" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="treatment_plan" class="form-label fw-bold">
+                            <i class="fas fa-tasks text-primary me-1"></i> Treatment Plan <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="treatment_plan" name="treatment_plan" rows="3" required></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="prescribed_medications" class="form-label fw-bold">
+                            <i class="fas fa-pills text-primary me-1"></i> Prescribed Medications
+                        </label>
+                        <textarea class="form-control" id="prescribed_medications" name="prescribed_medications" rows="3" 
+                                  placeholder="Enter medications, dosage, and instructions..."></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="notes" class="form-label fw-bold">
+                            <i class="fas fa-sticky-note text-primary me-1"></i> Additional Notes
+                        </label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"
+                                  placeholder="Any additional observations or follow-up instructions..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 pt-3 mt-2 border-top">
+                    <a href="{{ url_for('view_patient', id=patient.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-save me-1"></i> Complete Visit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-bold {
+        font-weight: 600 !important;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+        font-family: inherit;
+        margin-bottom: 0;
+    }
+    
+    .ai-response {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    .ai-response h3 {
+        font-size: 1.1rem;
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+        color: #3f51b5;
+        font-weight: 600;
+    }
+    
+    .ai-response h4 {
+        font-size: 1rem;
+        margin-top: 0.75rem;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+    
+    .ai-response ul, .ai-response ol {
+        padding-left: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .ai-response li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .ai-response p {
+        margin-bottom: 0.75rem;
+    }
+    
+    .ai-response strong, .ai-response b {
+        color: #333;
+    }
+    
+    .ai-response hr {
+        margin: 0.75rem 0;
+        opacity: 0.15;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Format AI response content
+        const formatAIContent = function(elementId) {
+            const container = document.getElementById(elementId);
+            if (!container) return;
+            
+            // Add paragraph breaks if missing
+            let content = container.innerHTML;
+            
+            // Replace double newlines with paragraph breaks
+            content = content.replace(/\n\n/g, '</p><p>');
+            
+            // Add bullet points to lists if not already formatted
+            if (!content.includes('<ul>') && !content.includes('<ol>')) {
+                content = content.replace(/(?:\r\n|\r|\n)- /g, '</p><ul><li>');
+                content = content.replace(/(?:\r\n|\r|\n)(\d+)\. /g, '</p><ol><li>');
+                
+                // Close any open lists
+                if (content.includes('<li>')) {
+                    if (content.includes('<ul><li>') && !content.includes('</ul>')) {
+                        content += '</li></ul><p>';
+                    }
+                    if (content.includes('<ol><li>') && !content.includes('</ol>')) {
+                        content += '</li></ol><p>';
+                    }
+                }
+            }
+            
+            // Wrap all content in paragraphs if not already
+            if (!content.includes('<p>')) {
+                content = '<p>' + content + '</p>';
+            }
+            
+            container.innerHTML = content;
+        };
+        
+        formatAIContent('suggested-diagnoses');
+        formatAIContent('suggested-treatments');
+    });
+</script>
+{% endblock %}

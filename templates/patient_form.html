@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0">
+                    <i class="fas {% if patient %}fa-user-edit{% else %}fa-user-plus{% endif %} me-2 text-primary"></i>
+                    {% if patient %}Edit Patient Information{% else %}Register New Patient{% endif %}
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row">
+                        <!-- Personal Information Section -->
+                        <div class="col-12 mb-3">
+                            <h5 class="text-primary mb-3 border-bottom pb-2">Personal Information</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="first_name" name="first_name" 
+                                       value="{{ patient.first_name if patient else '' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="last_name" name="last_name" 
+                                       value="{{ patient.last_name if patient else '' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="date_of_birth" class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="far fa-calendar-alt text-muted"></i>
+                                </span>
+                                <input type="date" class="form-control border-start-0" id="date_of_birth" name="date_of_birth" 
+                                       value="{{ patient.date_of_birth.strftime('%Y-%m-%d') if patient and patient.date_of_birth else '' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-venus-mars text-muted"></i>
+                                </span>
+                                <select class="form-select border-start-0" id="gender" name="gender" required>
+                                    <option value="" disabled selected>Select Gender</option>
+                                    <option value="Male" {% if patient and patient.gender == 'Male' %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if patient and patient.gender == 'Female' %}selected{% endif %}>Female</option>
+                                    <option value="Other" {% if patient and patient.gender == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="blood_type" class="form-label">Blood Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tint text-danger"></i>
+                                </span>
+                                <select class="form-select border-start-0" id="blood_type" name="blood_type">
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+" {% if patient and patient.blood_type == 'A+' %}selected{% endif %}>A+</option>
+                                    <option value="A-" {% if patient and patient.blood_type == 'A-' %}selected{% endif %}>A-</option>
+                                    <option value="B+" {% if patient and patient.blood_type == 'B+' %}selected{% endif %}>B+</option>
+                                    <option value="B-" {% if patient and patient.blood_type == 'B-' %}selected{% endif %}>B-</option>
+                                    <option value="AB+" {% if patient and patient.blood_type == 'AB+' %}selected{% endif %}>AB+</option>
+                                    <option value="AB-" {% if patient and patient.blood_type == 'AB-' %}selected{% endif %}>AB-</option>
+                                    <option value="O+" {% if patient and patient.blood_type == 'O+' %}selected{% endif %}>O+</option>
+                                    <option value="O-" {% if patient and patient.blood_type == 'O-' %}selected{% endif %}>O-</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Login Information Section - Before Contact Information -->
+                        <div class="col-12 mb-3 mt-2">
+                            <h5 class="text-primary mb-3 border-bottom pb-2">Login Information</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-user-circle text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="username" name="username" 
+                                       value="{{ patient.username if patient else '' }}" required>
+                            </div>
+                            <small class="form-text text-muted">This will be used for login purposes</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-lock text-muted"></i>
+                                </span>
+                                <input type="password" class="form-control border-start-0" id="password" name="password" 
+                                       value="{{ patient.password if patient else '' }}" {% if not patient %}required{% endif %}>
+                            </div>
+                            <small class="form-text text-muted">{% if patient %}Leave blank to keep current password{% else %}Choose a secure password{% endif %}</small>
+                        </div>
+                        
+                        <!-- Contact Information Section -->
+                        <div class="col-12 mb-3 mt-2">
+                            <h5 class="text-primary mb-3 border-bottom pb-2">Contact Information</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="contact_number" class="form-label">Contact Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-phone text-muted"></i>
+                                </span>
+                                <input type="tel" class="form-control border-start-0" id="contact_number" name="contact_number" 
+                                       value="{{ patient.contact_number if patient else '' }}" placeholder="(XXX) XXX-XXXX">
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-envelope text-muted"></i>
+                                </span>
+                                <input type="email" class="form-control border-start-0" id="email" name="email" 
+                                       value="{{ patient.email if patient else '' }}" placeholder="example@email.com">
+                            </div>
+                        </div>
+
+                        <!-- Physical Information Section -->
+                        <div class="col-12 mb-3 mt-2">
+                            <h5 class="text-primary mb-3 border-bottom pb-2">Physical Information</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="height" class="form-label">Height (cm)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-ruler-vertical text-muted"></i>
+                                </span>
+                                <input type="number" step="0.1" class="form-control border-start-0" id="height" name="height" 
+                                       value="{{ patient.height if patient else '' }}" placeholder="170.0">
+                                <span class="input-group-text">cm</span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="weight" class="form-label">Weight (kg)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-weight text-muted"></i>
+                                </span>
+                                <input type="number" step="0.1" class="form-control border-start-0" id="weight" name="weight" 
+                                       value="{{ patient.weight if patient else '' }}" placeholder="70.0">
+                                <span class="input-group-text">kg</span>
+                            </div>
+                        </div>
+
+                        <!-- Medical History Section -->
+                        <div class="col-12 mb-3 mt-2">
+                            <h5 class="text-primary mb-3 border-bottom pb-2">Medical History</h5>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="allergies" class="form-label">
+                                <i class="fas fa-allergies text-warning me-1"></i> Allergies
+                            </label>
+                            <textarea class="form-control" id="allergies" name="allergies" rows="3" 
+                                     placeholder="List any known allergies...">{{ patient.allergies if patient else '' }}</textarea>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="chronic_conditions" class="form-label">
+                                <i class="fas fa-heartbeat text-danger me-1"></i> Chronic Conditions
+                            </label>
+                            <textarea class="form-control" id="chronic_conditions" name="chronic_conditions" rows="3"
+                                     placeholder="List any chronic conditions...">{{ patient.chronic_conditions if patient else '' }}</textarea>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label for="current_medications" class="form-label">
+                                <i class="fas fa-pills text-success me-1"></i> Current Medications
+                            </label>
+                            <textarea class="form-control" id="current_medications" name="current_medications" rows="3"
+                                     placeholder="List any current medications...">{{ patient.current_medications if patient else '' }}</textarea>
+                        </div>
+                        
+                        <div class="col-md-6 mb-4">
+                            <label for="family_history" class="form-label">
+                                <i class="fas fa-users text-info me-1"></i> Family History
+                            </label>
+                            <textarea class="form-control" id="family_history" name="family_history" rows="3"
+                                     placeholder="Describe relevant family medical history...">{{ patient.family_history if patient else '' }}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between border-top pt-4">
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-save me-1"></i> Save Patient Information
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate Age on DOB change
+        document.getElementById('date_of_birth').addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            
+            // You could display the calculated age somewhere if desired
+            console.log('Calculated age: ' + age);
+        });
+    });
+</script>
+{% endblock %}

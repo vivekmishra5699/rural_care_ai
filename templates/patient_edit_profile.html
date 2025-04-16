@@ -1,0 +1,231 @@
+{% extends "minimal_base.html" %}
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl shadow-smooth overflow-hidden border border-surface-200/60 transition-all duration-300 hover:shadow-smooth-lg">
+            <div class="border-b px-6 py-5 bg-gradient-to-r from-brand-50 to-white">
+                <h4 class="text-xl font-semibold flex items-center font-display text-surface-800">
+                    <span class="flex items-center justify-center w-9 h-9 rounded-xl bg-brand-100 text-brand-600 mr-3">
+                        <i class="fas fa-user-edit"></i>
+                    </span>
+                    Edit Your Profile
+                </h4>
+                <p class="text-surface-500 text-sm mt-1 ml-12">Update your personal information and medical details</p>
+            </div>
+            
+            <div class="p-6 md:p-8">
+                <form method="POST" class="space-y-8">
+                    <!-- Personal Information Section -->
+                    <div class="card p-5 md:p-6">
+                        <h5 class="text-lg font-medium text-brand-600 border-b pb-2 mb-5 flex items-center">
+                            <i class="fas fa-id-card mr-2 text-brand-500"></i>
+                            Personal Information
+                        </h5>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="group">
+                                <label for="first_name" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">
+                                    First Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                       id="first_name" name="first_name" value="{{ patient.first_name }}" required>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="last_name" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">
+                                    Last Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                       id="last_name" name="last_name" value="{{ patient.last_name }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Login Information Section -->
+                    <div class="card p-5 md:p-6">
+                        <h5 class="text-lg font-medium text-brand-600 border-b pb-2 mb-5 flex items-center">
+                            <i class="fas fa-lock mr-2 text-brand-500"></i>
+                            Login Information
+                        </h5>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="group">
+                                <label for="username" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Username</label>
+                                <div class="relative">
+                                    <input type="text" class="w-full px-4 py-2.5 border rounded-xl bg-surface-100 text-surface-600" 
+                                           id="username" name="username" value="{{ patient.username }}" readonly>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <i class="fas fa-lock-alt text-surface-400 text-sm"></i>
+                                    </div>
+                                </div>
+                                <p class="mt-1.5 text-sm text-surface-500 flex items-center">
+                                    <i class="fas fa-info-circle mr-1 text-surface-400"></i>
+                                    Username cannot be changed
+                                </p>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="password" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Password</label>
+                                <div class="relative">
+                                    <input type="password" class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                           id="password" name="password">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                        <button type="button" class="text-surface-400 hover:text-brand-600 focus:outline-none" id="toggle-password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="mt-1.5 text-sm text-surface-500 flex items-center">
+                                    <i class="fas fa-info-circle mr-1 text-surface-400"></i>
+                                    Leave blank to keep current password
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information Section -->
+                    <div class="card p-5 md:p-6">
+                        <h5 class="text-lg font-medium text-brand-600 border-b pb-2 mb-5 flex items-center">
+                            <i class="fas fa-address-card mr-2 text-brand-500"></i>
+                            Contact Information
+                        </h5>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="group">
+                                <label for="contact_number" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Contact Number</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <i class="fas fa-phone text-surface-400"></i>
+                                    </div>
+                                    <input type="text" class="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                           id="contact_number" name="contact_number" value="{{ patient.contact_number }}">
+                                </div>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="email" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Email</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <i class="fas fa-envelope text-surface-400"></i>
+                                    </div>
+                                    <input type="email" class="w-full pl-10 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                           id="email" name="email" value="{{ patient.email }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Physical Information Section -->
+                    <div class="card p-5 md:p-6">
+                        <h5 class="text-lg font-medium text-brand-600 border-b pb-2 mb-5 flex items-center">
+                            <i class="fas fa-ruler-combined mr-2 text-brand-500"></i>
+                            Physical Information
+                        </h5>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="group">
+                                <label for="height" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Height (cm)</label>
+                                <div class="relative">
+                                    <input type="number" step="0.1" class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                           id="height" name="height" value="{{ patient.height }}">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <span class="text-surface-500 text-sm">cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="weight" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Weight (kg)</label>
+                                <div class="relative">
+                                    <input type="number" step="0.1" class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white" 
+                                           id="weight" name="weight" value="{{ patient.weight }}">
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                        <span class="text-surface-500 text-sm">kg</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical Information Section -->
+                    <div class="card p-5 md:p-6">
+                        <h5 class="text-lg font-medium text-brand-600 border-b pb-2 mb-5 flex items-center">
+                            <i class="fas fa-heartbeat mr-2 text-brand-500"></i>
+                            Medical Information
+                        </h5>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="group">
+                                <label for="allergies" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Allergies</label>
+                                <textarea class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white resize-none" 
+                                          id="allergies" name="allergies" rows="3">{{ patient.allergies }}</textarea>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="chronic_conditions" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Chronic Conditions</label>
+                                <textarea class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white resize-none" 
+                                          id="chronic_conditions" name="chronic_conditions" rows="3">{{ patient.chronic_conditions }}</textarea>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="current_medications" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Current Medications</label>
+                                <textarea class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white resize-none" 
+                                          id="current_medications" name="current_medications" rows="3">{{ patient.current_medications }}</textarea>
+                            </div>
+                            
+                            <div class="group">
+                                <label for="family_history" class="block text-sm font-medium text-surface-700 mb-1.5 group-hover:text-brand-600 transition-colors">Family Medical History</label>
+                                <textarea class="w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all duration-300 bg-white resize-none" 
+                                          id="family_history" name="family_history" rows="3">{{ patient.family_history }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row justify-between pt-6 border-t mt-6 gap-4">
+                        <a href="{{ url_for('patient_dashboard') }}" class="px-6 py-3 bg-surface-100 hover:bg-surface-200 text-surface-700 rounded-xl shadow-sm font-medium transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </a>
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white rounded-xl shadow-sm hover:shadow-md font-medium transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        }
+        
+        // Highlight fields on focus
+        const formInputs = document.querySelectorAll('input, textarea');
+        formInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.closest('.group').classList.add('is-focused');
+                this.parentElement.classList.add('ring-2', 'ring-brand-100');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.closest('.group').classList.remove('is-focused');
+                this.parentElement.classList.remove('ring-2', 'ring-brand-100');
+            });
+        });
+    });
+</script>
+{% endblock %}

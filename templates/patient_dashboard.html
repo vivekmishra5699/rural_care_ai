@@ -1,0 +1,625 @@
+{% extends "minimal_base.html" %}
+{% block content %}
+<!-- Welcome Section with improved mobile layout -->
+<div class="card animate-fade-in mb-4 md:mb-8 overflow-hidden">
+    <div class="p-3 sm:p-4 md:p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-6">
+            <div>
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-bold font-display text-surface-900 mb-1">
+                    Welcome, {{ patient.first_name }}
+                </h1>
+                <p class="text-surface-600 text-sm sm:text-base">Your personal healthcare dashboard</p>
+            </div>
+            <div class="flex flex-wrap gap-2 mt-2 md:mt-0 w-full md:w-auto justify-start md:justify-end">
+                <a href="{{ url_for('patient_visits') }}" class="btn-primary btn-sm flex items-center text-sm">
+                    <i class="fas fa-clipboard-list mr-2"></i>My Visits
+                </a>
+                <a href="{{ url_for('edit_patient_profile') }}" class="btn-outline btn-sm flex items-center text-sm">
+                    <i class="fas fa-user-edit mr-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Improved Tab Navigation with proper alignment -->
+<div class="mb-4 md:mb-6 overflow-x-auto no-scrollbar">
+    <div class="flex min-w-full md:min-w-0">
+        <button class="nav-pill active flex-1 justify-center items-center text-sm whitespace-nowrap py-2 px-3 md:py-3 md:px-5" id="tab-personal-info">
+            <i class="fas fa-user-circle mr-2 text-brand-500 flex-shrink-0"></i><span>Personal Info</span>
+        </button>
+        <button class="nav-pill flex-1 justify-center items-center text-sm whitespace-nowrap py-2 px-3 md:py-3 md:px-5" id="tab-medical-history">
+            <i class="fas fa-notes-medical mr-2 text-brand-500 flex-shrink-0"></i><span>Medical History</span>
+        </button>
+        <button class="nav-pill flex-1 justify-center items-center text-sm whitespace-nowrap py-2 px-3 md:py-3 md:px-5" id="tab-visits">
+            <i class="fas fa-calendar-check mr-2 text-brand-500 flex-shrink-0"></i><span>Recent Visits</span>
+        </button>
+    </div>
+</div>
+
+<!-- Vital Statistics - mobile optimized grid -->
+<div class="mb-4 md:mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="stat-card group animate-fade-in" style="animation-delay: 0.1s;">
+            <div class="flex items-center gap-2 md:gap-4">
+                <div class="icon-circle text-brand-600 w-9 h-9 md:w-12 md:h-12">
+                    <i class="fas fa-ruler-vertical text-lg"></i>
+                </div>
+                <div>
+                    <p class="stat-title text-xs">Height</p>
+                    <p class="stat-value text-xl md:text-2xl group-hover:text-brand-600 transition-colors duration-300">
+                        {{ patient.height if patient.height else '—' }} 
+                        {% if patient.height %}<span class="text-xs text-surface-500">cm</span>{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card group animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-2 md:gap-4">
+                <div class="icon-circle text-brand-600 w-9 h-9 md:w-12 md:h-12">
+                    <i class="fas fa-weight text-lg"></i>
+                </div>
+                <div>
+                    <p class="stat-title text-xs">Weight</p>
+                    <p class="stat-value text-xl md:text-2xl group-hover:text-brand-600 transition-colors duration-300">
+                        {{ patient.weight if patient.weight else '—' }} 
+                        {% if patient.weight %}<span class="text-xs text-surface-500">kg</span>{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card group animate-fade-in" style="animation-delay: 0.3s;">
+            <div class="flex items-center gap-2 md:gap-4">
+                <div class="icon-circle text-brand-600 w-9 h-9 md:w-12 md:h-12">
+                    <i class="fas fa-calculator text-lg"></i>
+                </div>
+                <div>
+                    <p class="stat-title text-xs">BMI</p>
+                    <p class="stat-value text-xl md:text-2xl group-hover:text-brand-600 transition-colors duration-300">
+                        {% if patient.height and patient.weight %}
+                            {{ (patient.weight / ((patient.height / 100) ** 2))|round(1) }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stat-card group animate-fade-in" style="animation-delay: 0.4s;">
+            <div class="flex items-center gap-2 md:gap-4">
+                <div class="icon-circle text-brand-600 w-9 h-9 md:w-12 md:h-12">
+                    <i class="fas fa-tint text-lg"></i>
+                </div>
+                <div>
+                    <p class="stat-title text-xs">Blood Type</p>
+                    <p class="stat-value text-xl md:text-2xl group-hover:text-brand-600 transition-colors duration-300">
+                        {{ patient.blood_type if patient.blood_type else '—' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Content: Personal Information - improved mobile layout -->
+<div id="personal-info-content" class="card animate-fade-in">
+    <div class="card-header flex items-center p-3 md:p-5">
+        <i class="fas fa-id-card-alt text-brand-600 mr-2"></i>
+        <h2 class="text-surface-800 font-semibold text-base md:text-lg">Personal Information</h2>
+    </div>
+    <div class="card-body p-3 md:p-5">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="col-span-1 flex flex-col items-center">
+                <div class="avatar-circle w-20 h-20 md:w-28 md:h-28 text-2xl md:text-3xl">
+                    {{ patient.first_name[0] }}{{ patient.last_name[0] }}
+                </div>
+                <h3 class="text-base md:text-xl font-semibold mt-3 text-surface-800 text-center">{{ patient.first_name }} {{ patient.last_name }}</h3>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-100 text-surface-700 mt-2">
+                    ID: {{ patient.id }}
+                </span>
+            </div>
+            
+            <div class="col-span-1 md:col-span-3 mt-4 md:mt-0">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                    <!-- Personal Details -->
+                    <div class="card p-3 md:p-4 shadow-smooth h-full">
+                        <h4 class="font-semibold text-surface-800 flex items-center mb-2 md:mb-3 text-sm md:text-base">
+                            <i class="far fa-calendar-alt text-brand-500 mr-2"></i>Personal Details
+                        </h4>
+                        <div class="space-y-2 md:space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Date of Birth</span>
+                                <span class="font-medium text-surface-800">{{ patient.date_of_birth.strftime('%b %d, %Y') }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Gender</span>
+                                <span class="font-medium text-surface-800">{{ patient.gender }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-surface-500">Blood Type</span>
+                                <span class="font-medium text-surface-800">{{ patient.blood_type if patient.blood_type else 'Not specified' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="card p-3 md:p-4 shadow-smooth h-full">
+                        <h4 class="font-semibold text-surface-800 flex items-center mb-2 md:mb-3 text-sm md:text-base">
+                            <i class="fas fa-phone-alt text-brand-500 mr-2"></i>Contact Information
+                        </h4>
+                        <div class="space-y-2 md:space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Phone</span>
+                                <span class="font-medium text-surface-800">{{ patient.contact_number if patient.contact_number else 'Not specified' }}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Email</span>
+                                <span class="font-medium text-surface-800 break-all">{{ patient.email if patient.email else 'Not specified' }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-surface-500">Doctor</span>
+                                <span class="font-medium text-surface-800">{{ patient.doctor_name if patient.doctor_name else 'Not assigned' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Physical Information -->
+                    <div class="card p-3 md:p-4 shadow-smooth h-full">
+                        <h4 class="font-semibold text-surface-800 flex items-center mb-2 md:mb-3 text-sm md:text-base">
+                            <i class="fas fa-ruler-combined text-brand-500 mr-2"></i>Physical Information
+                        </h4>
+                        <div class="space-y-2 md:space-y-3 text-sm">
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Height</span>
+                                <span class="font-medium text-surface-800">{{ patient.height if patient.height else 'Not recorded' }} 
+                                    {% if patient.height %}cm{% endif %}</span>
+                            </div>
+                            <div class="flex justify-between border-b border-surface-100 pb-2">
+                                <span class="text-surface-500">Weight</span>
+                                <span class="font-medium text-surface-800">{{ patient.weight if patient.weight else 'Not recorded' }} 
+                                    {% if patient.weight %}kg{% endif %}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-surface-500">BMI</span>
+                                <span class="font-medium text-surface-800">
+                                    {% if patient.height and patient.weight %}
+                                        {{ (patient.weight / ((patient.height / 100) ** 2))|round(1) }}
+                                    {% else %}
+                                        Not calculated
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Content: Medical History - Fixed for mobile -->
+<div id="medical-history-content" class="card animate-fade-in hidden">
+    <div class="card-header flex items-center p-3 md:p-5">
+        <i class="fas fa-notes-medical text-brand-600 mr-2"></i>
+        <h2 class="text-surface-800 font-semibold text-base md:text-lg">Medical History</h2>
+    </div>
+    <div class="card-body p-3 md:p-5">
+        {% if patient.allergies or patient.chronic_conditions or patient.current_medications or patient.family_history %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            {% if patient.allergies %}
+            <div class="card shadow-smooth relative border-2 border-red-500 overflow-hidden">
+                <div class="p-3 md:p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 md:w-12 md:h-12 rounded-full bg-red-50 text-red-600 flex-shrink-0">
+                            <i class="fas fa-allergies text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-surface-800 mb-1 md:mb-2 text-sm md:text-base">Allergies</h4>
+                            <p class="text-surface-700 text-sm">{{ patient.allergies }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if patient.chronic_conditions %}
+            <div class="card shadow-smooth relative border-2 border-amber-500 overflow-hidden">
+                <div class="p-3 md:p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 md:w-12 md:h-12 rounded-full bg-amber-50 text-amber-600 flex-shrink-0">
+                            <i class="fas fa-disease text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-surface-800 mb-1 md:mb-2 text-sm md:text-base">Chronic Conditions</h4>
+                            <p class="text-surface-700 text-sm">{{ patient.chronic_conditions }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if patient.current_medications %}
+            <div class="card shadow-smooth relative border-2 border-emerald-500 overflow-hidden">
+                <div class="p-3 md:p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 md:w-12 md:h-12 rounded-full bg-emerald-50 text-emerald-600 flex-shrink-0">
+                            <i class="fas fa-capsules text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-surface-800 mb-1 md:mb-2 text-sm md:text-base">Current Medications</h4>
+                            <p class="text-surface-700 text-sm">{{ patient.current_medications }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if patient.family_history %}
+            <div class="card shadow-smooth relative border-2 border-blue-500 overflow-hidden">
+                <div class="p-3 md:p-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex items-center justify-center w-9 h-9 md:w-12 md:h-12 rounded-full bg-blue-50 text-blue-600 flex-shrink-0">
+                            <i class="fas fa-users text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-surface-800 mb-1 md:mb-2 text-sm md:text-base">Family History</h4>
+                            <p class="text-surface-700 text-sm">{{ patient.family_history }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 md:py-10">
+            <div class="rounded-full bg-surface-100 p-4 inline-flex mb-3">
+                <i class="fas fa-file-medical text-surface-400 text-2xl md:text-3xl"></i>
+            </div>
+            <h3 class="text-base md:text-lg font-medium text-surface-700 mb-2">No medical history recorded</h3>
+            <p class="text-surface-500 max-w-md mx-auto text-sm">Your medical history will be updated after your visits with healthcare providers.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Tab Content: Recent Visits - Updated with fixed details section -->
+<div id="visits-content" class="card animate-fade-in hidden">
+    <div class="card-header flex items-center p-3 md:p-5">
+        <i class="fas fa-calendar-check text-brand-600 mr-2"></i>
+        <h2 class="text-surface-800 font-semibold text-base md:text-lg">Recent Visits</h2>
+    </div>
+    <div class="card-body p-3 md:p-5">
+        {% if visits %}
+        <div class="grid grid-cols-1 gap-3 md:gap-4">
+            <!-- Show only 2 most recent visits -->
+            {% for visit in visits[:2] %}
+            <div class="card shadow-smooth relative visit-card cursor-pointer border-2 
+                {% if visit.status == 'completed' %}border-emerald-500{% else %}border-amber-500{% endif %}" data-visit-id="{{ visit.id }}">
+                <div class="p-3 md:p-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3">
+                        <div class="flex items-center mb-2 sm:mb-0">
+                            <div class="flex flex-col items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-xl border border-surface-200 bg-white shadow-sm mr-3 flex-shrink-0">
+                                <span class="text-xs text-surface-500">{{ visit.date.strftime('%b') }}</span>
+                                <span class="text-sm md:text-base font-display font-bold text-surface-800">{{ visit.date.strftime('%d') }}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-surface-800 text-sm">{{ visit.chief_complaint }}</h4>
+                                <p class="text-xs text-surface-500">Dr. {{ visit.doctor_name }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
+                            <span class="badge {% if visit.status == 'completed' %}badge-success{% else %}badge-warning{% endif %} text-xs">
+                                {{ visit.status|capitalize }}
+                            </span>
+                            <button class="visit-details-btn btn-primary btn-sm py-1 px-2 md:px-3 text-xs" data-visit-id="{{ visit.id }}">
+                                <i class="fas fa-eye mr-1"></i> <span class="hidden sm:inline">Details</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Vital Signs Summary -->
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-3 pt-3 border-t border-surface-100">
+                        <div class="text-center col-span-1">
+                            <p class="text-xs text-surface-500">Temp</p>
+                            <p class="font-medium text-surface-800 text-xs sm:text-sm">{{ visit.temperature }}°C</p>
+                        </div>
+                        <div class="text-center col-span-1">
+                            <p class="text-xs text-surface-500">BP</p>
+                            <p class="font-medium text-surface-800 text-xs sm:text-sm">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }}</p>
+                        </div>
+                        <div class="text-center col-span-1 sm:col-span-1">
+                            <p class="text-xs text-surface-500">HR</p>
+                            <p class="font-medium text-surface-800 text-xs sm:text-sm">{{ visit.heart_rate }}</p>
+                        </div>
+                        <div class="text-center col-span-1 sm:col-span-1">
+                            <p class="text-xs text-surface-500">Resp</p>
+                            <p class="font-medium text-surface-800 text-xs sm:text-sm">{{ visit.respiratory_rate }}</p>
+                        </div>
+                        <div class="text-center col-span-2 sm:col-span-1">
+                            <p class="text-xs text-surface-500">O₂</p>
+                            <p class="font-medium text-surface-800 text-xs sm:text-sm">{{ visit.oxygen_saturation }}%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Visit details section -->
+                    <div id="visit-details-{{ visit.id }}" class="hidden mt-3 pt-3 border-t border-surface-100 text-sm">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 animate-fade-in">
+                            <div>
+                                <h5 class="font-semibold text-brand-600 mb-2 text-sm">Symptoms</h5>
+                                <div class="bg-surface-50 rounded-lg p-3 border border-surface-200">
+                                    <p class="text-surface-800 mb-2 text-xs sm:text-sm">{{ visit.symptoms }}</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                        <div><span class="text-surface-500">Duration:</span> <span class="text-surface-800">{{ visit.duration_of_symptoms }}</span></div>
+                                        <div><span class="text-surface-500">Severity:</span> <span class="text-surface-800">{{ visit.severity }}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h5 class="font-semibold text-brand-600 mb-2 text-sm">Diagnosis & Treatment</h5>
+                                <div class="bg-surface-50 rounded-lg p-3 border border-surface-200">
+                                    {% if visit.status == 'completed' %}
+                                        <div class="mb-2 text-xs sm:text-sm"><span class="text-surface-500 font-medium">Diagnosis:</span> <span class="text-surface-800">{{ visit.diagnosis }}</span></div>
+                                        {% if visit.treatment_plan %}
+                                        <div class="mb-2 text-xs sm:text-sm"><span class="text-surface-500 font-medium">Treatment:</span> <span class="text-surface-800">{{ visit.treatment_plan }}</span></div>
+                                        {% endif %}
+                                        {% if visit.prescribed_medications %}
+                                        <div class="text-xs sm:text-sm"><span class="text-surface-500 font-medium">Medications:</span> <span class="text-surface-800">{{ visit.prescribed_medications }}</span></div>
+                                        {% endif %}
+                                    {% else %}
+                                        <p class="text-amber-600 text-xs sm:text-sm">This visit is still in progress. Diagnosis and treatment will be provided once your doctor completes the visit.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="flex justify-center mt-4 md:mt-5">
+            <a href="{{ url_for('patient_visits') }}" class="btn-primary text-sm py-2">
+                <i class="fas fa-list-ul mr-2"></i>View All Visits
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-8 md:py-10">
+            <div class="rounded-full bg-surface-100 p-4 inline-flex mb-3">
+                <i class="fas fa-calendar-times text-surface-400 text-2xl md:text-3xl"></i>
+            </div>
+            <h3 class="text-base md:text-lg font-medium text-surface-700 mb-2">No visit records found</h3>
+            <p class="text-surface-500 max-w-md mx-auto text-sm mb-4">Your visit history will appear here after your appointments.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Hide scrollbar but allow scrolling */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;  /* Chrome, Safari, Opera */
+    }
+    
+    /* Visit card hover effect */
+    .visit-card {
+        transition: all 0.2s ease-out;
+    }
+    
+    .visit-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Medical history card colors */
+    .card.medical-history-card {
+        border-left-width: 0 !important;
+    }
+    
+    /* Override any styles causing overflow on mobile */
+    @media (max-width: 640px) {
+        * {
+            max-width: 100vw;
+            box-sizing: border-box;
+        }
+        
+        .responsive-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+    }
+
+    /* Card styles with colored borders */
+    .card {
+        @apply bg-white rounded-2xl shadow-smooth overflow-hidden transition-all duration-300 hover:shadow-smooth-lg;
+    }
+
+    /* Keep border width consistent */
+    .border-2 {
+        border-width: 2px;
+    }
+
+    /* Button hover effects */
+    .visit-details-btn:hover {
+        @apply bg-brand-600;
+    }
+
+    /* Medical history card colorful borders */
+    .medical-history-card {
+        @apply border-2 rounded-2xl;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab functionality remains the same
+        const tabPersonalInfo = document.getElementById('tab-personal-info');
+        const tabMedicalHistory = document.getElementById('tab-medical-history');
+        const tabVisits = document.getElementById('tab-visits');
+        const personalInfoContent = document.getElementById('personal-info-content');
+        const medicalHistoryContent = document.getElementById('medical-history-content');
+        const visitsContent = document.getElementById('visits-content');
+        
+        // Check if all elements exist before adding event listeners
+        if (tabPersonalInfo && tabMedicalHistory && tabVisits && 
+            personalInfoContent && medicalHistoryContent && visitsContent) {
+            
+            // Simpler tab switching for better performance on mobile
+            const switchTab = (showEl, hideEls, activeTab) => {
+                // Update active class
+                document.querySelectorAll('.nav-pill').forEach(tab => tab.classList.remove('active'));
+                activeTab.classList.add('active');
+                
+                // Hide other tabs
+                hideEls.forEach(el => el.classList.add('hidden'));
+                
+                // Show active tab
+                showEl.classList.remove('hidden');
+            };
+            
+            tabPersonalInfo.addEventListener('click', function() {
+                switchTab(personalInfoContent, [medicalHistoryContent, visitsContent], this);
+            });
+            
+            tabMedicalHistory.addEventListener('click', function() {
+                switchTab(medicalHistoryContent, [personalInfoContent, visitsContent], this);
+            });
+            
+            tabVisits.addEventListener('click', function() {
+                switchTab(visitsContent, [personalInfoContent, medicalHistoryContent], this);
+            });
+        }
+
+        // IMPROVED Visit details functionality
+        function initializeVisitDetails() {
+            console.log("Initializing visit details...");
+            const detailButtons = document.querySelectorAll('.visit-details-btn');
+            const visitCards = document.querySelectorAll('.visit-card');
+            
+            // First, make sure all detail sections are properly hidden initially
+            document.querySelectorAll('[id^="visit-details-"]').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Clear any existing event listeners to prevent duplicates
+            detailButtons.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+            });
+            
+            visitCards.forEach(card => {
+                const newCard = card.cloneNode(true);
+                card.parentNode.replaceChild(newCard, card);
+            });
+            
+            // Get fresh references after replacing elements
+            const freshDetailButtons = document.querySelectorAll('.visit-details-btn');
+            const freshVisitCards = document.querySelectorAll('.visit-card');
+            
+            // Simple toggle function with debug logs
+            function toggleVisitDetails(visitId) {
+                console.log(`Toggling details for visit ${visitId}`);
+                const detailsSection = document.getElementById(`visit-details-${visitId}`);
+                const detailsButton = document.querySelector(`.visit-details-btn[data-visit-id="${visitId}"]`);
+                
+                if (!detailsSection) {
+                    console.error(`Details section for visit ${visitId} not found`);
+                    return;
+                }
+                
+                console.log(`Current state: ${detailsSection.classList.contains('hidden') ? 'hidden' : 'visible'}`);
+                
+                // Toggle the hidden class
+                if (detailsSection.classList.contains('hidden')) {
+                    // Show details
+                    detailsSection.classList.remove('hidden');
+                    console.log(`Showing details for visit ${visitId}`);
+                    
+                    // Update button text
+                    if (detailsButton) {
+                        detailsButton.innerHTML = '<i class="fas fa-eye-slash mr-1"></i>' + 
+                            (window.innerWidth >= 640 ? '<span class="hidden sm:inline">Hide</span>' : '');
+                    }
+                } else {
+                    // Hide details
+                    detailsSection.classList.add('hidden');
+                    console.log(`Hiding details for visit ${visitId}`);
+                    
+                    // Update button text
+                    if (detailsButton) {
+                        detailsButton.innerHTML = '<i class="fas fa-eye mr-1"></i>' + 
+                            (window.innerWidth >= 640 ? '<span class="hidden sm:inline">Details</span>' : '');
+                    }
+                }
+            }
+            
+            // Card click (excluding button area)
+            freshVisitCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Only trigger if not clicking on the button
+                    if (!e.target.closest('.visit-details-btn')) {
+                        const visitId = this.getAttribute('data-visit-id');
+                        console.log(`Card clicked for visit ${visitId}`);
+                        toggleVisitDetails(visitId);
+                    }
+                });
+            });
+            
+            // Button click
+            freshDetailButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const visitId = this.getAttribute('data-visit-id');
+                    console.log(`Button clicked for visit ${visitId}`);
+                    toggleVisitDetails(visitId);
+                });
+            });
+            
+            console.log("Visit details initialization complete");
+        }
+        
+        // Initialize details functionality after a small delay to ensure DOM is ready
+        setTimeout(initializeVisitDetails, 100);
+        
+        // Reinitialize when switching to visits tab
+        if (document.getElementById('tab-visits')) {
+            document.getElementById('tab-visits').addEventListener('click', function() {
+                console.log("Visits tab clicked, reinitializing details");
+                setTimeout(initializeVisitDetails, 100);
+            });
+        }
+        
+        // Responsive layout adjustments
+        function adjustForScreenSize() {
+            const width = window.innerWidth;
+            
+            // Ensure proper sizing of content container on mobile
+            if (width < 640) {
+                document.querySelector('.content-container').style.width = '100%';
+                document.querySelector('.content-container').style.maxWidth = '100%';
+                document.querySelector('.content-container').style.padding = '0 12px';
+            }
+        }
+        
+        // Run once on page load
+        adjustForScreenSize();
+        
+        // Add resize listener with debounce for better performance
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(adjustForScreenSize, 100);
+        });
+    });
+</script>
+{% endblock %}

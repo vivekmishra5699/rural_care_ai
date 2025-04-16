@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden animate__animated animate__fadeInUp">
+            <div class="row g-0">
+                <!-- Left side with gradient background and healthcare illustrations -->
+                <div class="col-md-5 d-none d-md-block">
+                    <div class="h-100 bg-gradient-to-br from-primary-700 to-primary-900 p-5 text-white position-relative overflow-hidden">
+                        <div class="position-relative z-10">
+                            <h2 class="fw-bold mb-4">Healthcare Innovation</h2>
+                            <p class="mb-4 opacity-80">Welcome to the next generation of rural healthcare management powered by AI.</p>
+                            
+                            <div class="mt-5">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-white/20 p-2 me-3" style="width: 42px; height: 42px;">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">AI Diagnostic Support</h6>
+                                        <p class="mb-0 small opacity-75">Smart recommendations</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-white/20 p-2 me-3" style="width: 42px; height: 42px;">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">Health Analytics</h6>
+                                        <p class="mb-0 small opacity-75">Data-driven insights</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle bg-white/20 p-2 me-3" style="width: 42px; height: 42px;">
+                                        <i class="fas fa-heartbeat"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">Patient Monitoring</h6>
+                                        <p class="mb-0 small opacity-75">Real-time health tracking</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Decorative elements -->
+                        <div class="position-absolute bottom-0 end-0 opacity-10">
+                            <i class="fas fa-stethoscope fa-10x"></i>
+                        </div>
+                        <div class="position-absolute top-0 start-0 opacity-10">
+                            <i class="fas fa-dna fa-8x"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right side with login form -->
+                <div class="col-md-7">
+                    <div class="p-5">
+                        <div class="text-center text-md-start mb-5">
+                            <div class="d-inline-flex align-items-center justify-content-center mb-4">
+                                <div class="d-flex align-items-center justify-content-center rounded-xl bg-gradient-to-r from-primary-600 to-primary-500 shadow-lg text-white p-3">
+                                    <i class="fas fa-heartbeat fa-2x"></i>
+                                </div>
+                            </div>
+                            <h2 class="fw-bold">Provider Login</h2>
+                            <p class="text-muted">Access your comprehensive healthcare dashboard</p>
+                        </div>
+                        
+                        <form method="POST" class="animate__animated animate__fadeIn animate__delay-1s">
+                            <div class="mb-4">
+                                <label for="username" class="form-label fw-semibold mb-2">Username</label>
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text border-0 bg-light text-primary">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-0 bg-light py-3" 
+                                           id="username" name="username" placeholder="Enter your username" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label for="password" class="form-label fw-semibold">Password</label>
+                                    <a href="#" class="text-decoration-none text-primary small">Forgot password?</a>
+                                </div>
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text border-0 bg-light text-primary">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control border-0 bg-light py-3" 
+                                           id="password" name="password" placeholder="Enter your password" required>
+                                    <span class="input-group-text border-0 bg-light cursor-pointer toggle-password">
+                                        <i class="fas fa-eye-slash text-muted"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input border-primary" type="checkbox" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">
+                                    Keep me signed in on this device
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="submit" class="btn btn-primary btn-lg py-3 rounded-3 fw-semibold shadow">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Sign In to Dashboard
+                                </button>
+                            </div>
+                            
+                            <div class="text-center mb-2">
+                                <p class="text-muted mb-3">
+                                    <span class="d-inline-block border-top w-25 mx-2"></span>
+                                    <span>or</span>
+                                    <span class="d-inline-block border-top w-25 mx-2"></span>
+                                </p>
+                                <a href="{{ url_for('register') }}" class="btn btn-outline-primary rounded-3 py-2 px-4">
+                                    <i class="fas fa-user-plus me-2"></i>Register as a New Doctor
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security features banner -->
+        <div class="card border-0 shadow-sm mt-4 p-3 animate__animated animate__fadeIn animate__delay-1s">
+            <div class="row g-0 align-items-center">
+                <div class="col-auto pe-4 border-end">
+                    <i class="fas fa-shield-alt text-primary fa-2x"></i>
+                </div>
+                <div class="col ps-4">
+                    <div class="d-flex flex-wrap justify-content-center justify-content-md-start">
+                        <div class="me-4 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-lock-alt me-2 text-primary"></i>
+                                <span class="small">End-to-end encryption</span>
+                            </div>
+                        </div>
+                        <div class="me-4 mb-2 mb-md-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-certificate me-2 text-primary"></i>
+                                <span class="small">HIPAA Compliant</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock me-2 text-primary"></i>
+                                <span class="small">24/7 Secure Access</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rounded-4 {
+        border-radius: 1rem !important;
+    }
+    
+    .rounded-xl {
+        border-radius: 1rem !important;
+    }
+    
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    
+    .toggle-password:hover {
+        color: var(--bs-primary) !important;
+    }
+    
+    .bg-white\/20 {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .bg-gradient-to-br {
+        background-image: linear-gradient(to bottom right, var(--bs-primary), var(--bs-indigo));
+    }
+    
+    .opacity-10 {
+        opacity: 0.1;
+    }
+    
+    .opacity-75 {
+        opacity: 0.75;
+    }
+    
+    .opacity-80 {
+        opacity: 0.8;
+    }
+    
+    .z-10 {
+        z-index: 10;
+    }
+    
+    .shadow-smooth {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Input focus styling */
+    .form-control:focus, .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password visibility toggle
+        const togglePassword = document.querySelector('.toggle-password');
+        const passwordInput = document.querySelector('#password');
+        
+        if (togglePassword && passwordInput) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // Toggle icon
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+        }
+    });
+</script>
+{% endblock %}

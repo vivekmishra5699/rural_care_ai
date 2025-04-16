@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1"><i class="fas fa-notes-medical text-primary me-2"></i>New Visit</h2>
+            <p class="text-muted mb-0">Patient: {{ patient.first_name }} {{ patient.last_name }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('view_patient', id=patient.id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Patient
+            </a>
+        </div>
+    </div>
+
+    <div class="alert alert-info d-flex align-items-center mb-4">
+        <i class="fas fa-info-circle me-3 fa-lg"></i>
+        <div>
+            First, enter the patient's symptoms and vital signs. After submission, AI will analyze the data and suggest possible diagnoses.
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <h4 class="card-title mb-4 d-flex align-items-center">
+                            <i class="fas fa-heartbeat text-primary me-2"></i>Vital Signs
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label for="temperature" class="form-label fw-semibold">Temperature</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-thermometer-half text-muted"></i>
+                                </span>
+                                <input type="number" step="0.1" class="form-control border-start-0" 
+                                       id="temperature" name="temperature" placeholder="37.0">
+                                <span class="input-group-text">°C</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="blood_pressure_systolic" class="form-label fw-semibold">Blood Pressure</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="fas fa-heart text-muted"></i>
+                                    </span>
+                                    <input type="number" class="form-control border-start-0" 
+                                           id="blood_pressure_systolic" name="blood_pressure_systolic" placeholder="120">
+                                    <span class="input-group-text border-start-0 border-end-0">/</span>
+                                    <input type="number" class="form-control border-start-0" 
+                                           id="blood_pressure_diastolic" name="blood_pressure_diastolic" placeholder="80">
+                                    <span class="input-group-text">mmHg</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="heart_rate" class="form-label fw-semibold">Heart Rate</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-heartbeat text-muted"></i>
+                                </span>
+                                <input type="number" class="form-control border-start-0" 
+                                       id="heart_rate" name="heart_rate" placeholder="72">
+                                <span class="input-group-text">bpm</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="respiratory_rate" class="form-label fw-semibold">Respiratory Rate</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-lungs text-muted"></i>
+                                </span>
+                                <input type="number" class="form-control border-start-0" 
+                                       id="respiratory_rate" name="respiratory_rate" placeholder="16">
+                                <span class="input-group-text">br/min</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="oxygen_saturation" class="form-label fw-semibold">Oxygen Saturation</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-wind text-muted"></i>
+                                </span>
+                                <input type="number" step="0.1" class="form-control border-start-0" 
+                                       id="oxygen_saturation" name="oxygen_saturation" placeholder="98.0">
+                                <span class="input-group-text">%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4 class="card-title mb-4 d-flex align-items-center">
+                            <i class="fas fa-clipboard-list text-primary me-2"></i>Symptoms Information
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label for="chief_complaint" class="form-label fw-semibold">
+                                Chief Complaint <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-exclamation-circle text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="chief_complaint" 
+                                       name="chief_complaint" required placeholder="Primary reason for visit">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="symptoms" class="form-label fw-semibold">
+                                Symptoms (comma-separated) <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-list-ul text-muted"></i>
+                                </span>
+                                <textarea class="form-control border-start-0" id="symptoms" name="symptoms" 
+                                          rows="3" required placeholder="fever, cough, headache"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="duration_of_symptoms" class="form-label fw-semibold">Duration of Symptoms</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="far fa-clock text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0" id="duration_of_symptoms" 
+                                       name="duration_of_symptoms" placeholder="e.g., 3 days, 1 week">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="severity" class="form-label fw-semibold">Severity</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-chart-line text-muted"></i>
+                                </span>
+                                <select class="form-select border-start-0" id="severity" name="severity">
+                                    <option value="">Select severity level</option>
+                                    <option value="Mild">Mild</option>
+                                    <option value="Moderate">Moderate</option>
+                                    <option value="Severe">Severe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-2 pt-4 mt-2 border-top">
+                    <a href="{{ url_for('view_patient', id=patient.id) }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="fas fa-robot me-1"></i> Submit for AI Analysis
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .fw-semibold {
+        font-weight: 500;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(63, 81, 181, 0.25);
+        border-color: #7986cb;
+    }
+</style>
+{% endblock %}

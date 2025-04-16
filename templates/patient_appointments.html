@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-calendar-alt me-2 text-info"></i>
+                Appointments
+            </h2>
+            <p class="text-muted mb-0">Manage your upcoming appointments</p>
+        </div>
+        <a href="{{ url_for('patient_dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+    
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Request New Appointment</h5>
+        </div>
+        <div class="card-body">
+            <p class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                Appointment scheduling is not implemented yet. Please contact your healthcare provider directly to schedule appointments.
+            </p>
+        </div>
+    </div>
+    
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Upcoming Appointments</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="text-center py-5">
+                <i class="far fa-calendar fa-3x text-muted mb-3"></i>
+                <p class="mb-0">No upcoming appointments</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,498 @@
+{% extends "minimal_base.html" %}
+{% block content %}
+<!-- Header Section - Simplified -->
+<div class="card animate-fade-in mb-4 md:mb-6 overflow-hidden">
+    <div class="p-3 sm:p-4 md:p-5">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold font-display text-surface-900 mb-1 flex items-center">
+                    <i class="fas fa-clipboard-list text-brand-500 mr-3"></i>Visit History
+                </h1>
+                <p class="text-surface-600 text-sm">Complete record of your medical visits</p>
+            </div>
+            <a href="{{ url_for('patient_dashboard') }}" class="btn-outline btn-sm flex items-center text-sm">
+                <i class="fas fa-arrow-left mr-2"></i>Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Visits Filter Controls - Updated with Date Filter -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+    <div class="flex items-center space-x-4 text-sm text-surface-600">
+        <span class="hidden sm:inline text-surface-700 font-medium">Status:</span>
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 mr-1"></span>
+                <span>Completed</span>
+            </div>
+            <div class="flex items-center">
+                <span class="w-3 h-3 rounded-full bg-amber-500 mr-1"></span>
+                <span>In Progress</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+        <div class="relative flex-grow sm:flex-grow-0">
+            <input type="text" id="search-visits" placeholder="Search visits..." class="form-input pl-10 w-full">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-400"></i>
+        </div>
+        <select id="filter-date" class="form-select py-2 sm:w-auto text-sm">
+            <option value="all">All Time</option>
+            <option value="last-month">Last Month</option>
+            <option value="last-3-months">Last 3 Months</option>
+            <option value="last-6-months">Last 6 Months</option>
+            <option value="last-year">Last Year</option>
+        </select>
+    </div>
+</div>
+
+<!-- Visits Table Card - Same as before -->
+<div class="card animate-fade-in shadow-smooth overflow-hidden">
+    <div class="p-0">
+        <!-- Desktop View - Table -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-surface-200 bg-surface-50 text-left">
+                        <th class="p-4 text-sm font-medium text-surface-600">Date</th>
+                        <th class="p-4 text-sm font-medium text-surface-600">Doctor</th>
+                        <th class="p-4 text-sm font-medium text-surface-600">Reason</th>
+                        <th class="p-4 text-sm font-medium text-surface-600">Status</th>
+                        <th class="p-4 text-sm font-medium text-surface-600 text-right">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr class="border-b border-surface-200 hover:bg-surface-50 transition-colors" data-visit-date="{{ visit.date.strftime('%Y-%m-%d') }}">
+                        <td class="p-4">
+                            <div class="flex items-center">
+                                <div class="flex flex-col items-center justify-center w-10 h-10 rounded-lg border border-surface-200 bg-white shadow-sm mr-3 flex-shrink-0">
+                                    <span class="text-xs text-surface-500">{{ visit.date.strftime('%b') }}</span>
+                                    <span class="text-sm font-display font-bold text-surface-800">{{ visit.date.strftime('%d') }}</span>
+                                </div>
+                                <span class="text-sm text-surface-800">{{ visit.date.strftime('%Y') }}</span>
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm text-surface-800">Dr. {{ visit.doctor_name }}</div>
+                        </td>
+                        <td class="p-4">
+                            <div class="text-sm text-surface-800">{{ visit.chief_complaint }}</div>
+                        </td>
+                        <td class="p-4">
+                            <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {% if visit.status == 'completed' %}bg-emerald-100 text-emerald-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                                {{ visit.status|capitalize }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <button class="visit-details-btn btn-primary btn-sm py-1 px-3 text-xs" data-visit-id="{{ visit.id }}">
+                                <i class="fas fa-eye mr-1"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                    
+                    <!-- Details Row - Same as before -->
+                    <tr class="visit-details-row hidden" id="visit-details-row-{{ visit.id }}" data-visit-date="{{ visit.date.strftime('%Y-%m-%d') }}">
+                        <td colspan="5" class="p-0">
+                            <div class="p-4 bg-surface-50 border-b border-surface-200">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                    <!-- Vital Signs -->
+                                    <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+                                        <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                            <i class="fas fa-heartbeat text-brand-500 mr-2"></i>Vital Signs
+                                        </h4>
+                                        <div class="grid grid-cols-5 gap-2 text-center">
+                                            <div>
+                                                <p class="text-xs text-surface-500">Temp</p>
+                                                <p class="font-medium text-surface-800 text-sm">{{ visit.temperature }}°C</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-surface-500">BP</p>
+                                                <p class="font-medium text-surface-800 text-sm">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-surface-500">HR</p>
+                                                <p class="font-medium text-surface-800 text-sm">{{ visit.heart_rate }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-surface-500">Resp</p>
+                                                <p class="font-medium text-surface-800 text-sm">{{ visit.respiratory_rate }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-surface-500">O₂</p>
+                                                <p class="font-medium text-surface-800 text-sm">{{ visit.oxygen_saturation }}%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Symptoms - Same as before -->
+                                    <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+                                        <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                            <i class="fas fa-thermometer-three-quarters text-brand-500 mr-2"></i>Symptoms
+                                        </h4>
+                                        <p class="text-sm text-surface-800 mb-2">{{ visit.symptoms }}</p>
+                                        <div class="grid grid-cols-2 gap-2 text-xs">
+                                            <div><span class="text-surface-500">Duration:</span> <span class="text-surface-800">{{ visit.duration_of_symptoms }}</span></div>
+                                            <div><span class="text-surface-500">Severity:</span> <span class="text-surface-800">{{ visit.severity }}</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Diagnosis and Treatment - Same as before -->
+                                    <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm lg:col-span-2">
+                                        <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                            <i class="fas fa-stethoscope text-brand-500 mr-2"></i>Diagnosis & Treatment
+                                        </h4>
+                                        {% if visit.status == 'completed' %}
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <div>
+                                                    <p class="text-xs text-surface-500 mb-1">Diagnosis</p>
+                                                    <p class="text-sm text-surface-800">{{ visit.diagnosis }}</p>
+                                                </div>
+                                                {% if visit.treatment_plan %}
+                                                <div>
+                                                    <p class="text-xs text-surface-500 mb-1">Treatment Plan</p>
+                                                    <p class="text-sm text-surface-800">{{ visit.treatment_plan }}</p>
+                                                </div>
+                                                {% endif %}
+                                                {% if visit.prescribed_medications %}
+                                                <div class="md:col-span-2">
+                                                    <p class="text-xs text-surface-500 mb-1">Prescribed Medications</p>
+                                                    <p class="text-sm text-surface-800">{{ visit.prescribed_medications }}</p>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            <p class="text-amber-600 text-sm">This visit is still in progress. Diagnosis and treatment will be provided once your doctor completes the visit.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Mobile View - Cards -->
+        <div class="md:hidden">
+            {% for visit in visits %}
+            <div class="border-b border-surface-200 p-3" data-visit-date="{{ visit.date.strftime('%Y-%m-%d') }}">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center">
+                        <div class="flex flex-col items-center justify-center w-10 h-10 rounded-lg border border-surface-200 bg-white shadow-sm mr-3 flex-shrink-0">
+                            <span class="text-xs text-surface-500">{{ visit.date.strftime('%b') }}</span>
+                            <span class="text-sm font-display font-bold text-surface-800">{{ visit.date.strftime('%d') }}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-surface-800">{{ visit.chief_complaint }}</div>
+                            <div class="text-xs text-surface-500">Dr. {{ visit.doctor_name }}</div>
+                        </div>
+                    </div>
+                    <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {% if visit.status == 'completed' %}bg-emerald-100 text-emerald-800{% else %}bg-amber-100 text-amber-800{% endif %}">
+                        {{ visit.status|capitalize }}
+                    </span>
+                </div>
+                
+                <div class="flex justify-end mt-2">
+                    <button class="visit-details-btn-mobile btn-primary btn-sm py-1 px-2 text-xs" data-visit-id="{{ visit.id }}">
+                        <i class="fas fa-eye mr-1"></i> View Details
+                    </button>
+                </div>
+                
+                <!-- Mobile Details - Add missing content -->
+                <div id="visit-details-mobile-{{ visit.id }}" class="mt-3 pt-3 border-t border-surface-100 hidden animate-fade-in">
+                    <div class="space-y-3">
+                        <!-- Vital Signs for Mobile - Improved for very small screens -->
+                        <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+                            <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                <i class="fas fa-heartbeat text-brand-500 mr-2"></i>Vital Signs
+                            </h4>
+                            <div class="grid grid-cols-3 xs:grid-cols-2 gap-2 text-center">
+                                <div>
+                                    <p class="text-xs text-surface-500">Temp</p>
+                                    <p class="font-medium text-surface-800 text-sm">{{ visit.temperature }}°C</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-surface-500">BP</p>
+                                    <p class="font-medium text-surface-800 text-sm">{{ visit.blood_pressure_systolic }}/{{ visit.blood_pressure_diastolic }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-surface-500">HR</p>
+                                    <p class="font-medium text-surface-800 text-sm">{{ visit.heart_rate }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-surface-500">Resp</p>
+                                    <p class="font-medium text-surface-800 text-sm">{{ visit.respiratory_rate }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-surface-500">O₂</p>
+                                    <p class="font-medium text-surface-800 text-sm">{{ visit.oxygen_saturation }}%</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Symptoms for Mobile -->
+                        <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+                            <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                <i class="fas fa-thermometer-three-quarters text-brand-500 mr-2"></i>Symptoms
+                            </h4>
+                            <p class="text-sm text-surface-800 mb-2">{{ visit.symptoms }}</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div><span class="text-surface-500">Duration:</span> <span class="text-surface-800">{{ visit.duration_of_symptoms }}</span></div>
+                                <div><span class="text-surface-500">Severity:</span> <span class="text-surface-800">{{ visit.severity }}</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Diagnosis and Treatment for Mobile -->
+                        <div class="bg-white p-3 rounded-lg border border-surface-200 shadow-sm">
+                            <h4 class="text-sm font-semibold text-surface-800 mb-2 flex items-center">
+                                <i class="fas fa-stethoscope text-brand-500 mr-2"></i>Diagnosis & Treatment
+                            </h4>
+                            {% if visit.status == 'completed' %}
+                                <div class="space-y-2">
+                                    <div>
+                                        <p class="text-xs text-surface-500 mb-1">Diagnosis</p>
+                                        <p class="text-sm text-surface-800">{{ visit.diagnosis }}</p>
+                                    </div>
+                                    {% if visit.treatment_plan %}
+                                    <div>
+                                        <p class="text-xs text-surface-500 mb-1">Treatment Plan</p>
+                                        <p class="text-sm text-surface-800">{{ visit.treatment_plan }}</p>
+                                    </div>
+                                    {% endif %}
+                                    {% if visit.prescribed_medications %}
+                                    <div>
+                                        <p class="text-xs text-surface-500 mb-1">Prescribed Medications</p>
+                                        <p class="text-sm text-surface-800">{{ visit.prescribed_medications }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <p class="text-amber-600 text-sm">This visit is still in progress. Diagnosis and treatment will be provided once your doctor completes the visit.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Desktop view details toggle - Same as before
+        const detailButtons = document.querySelectorAll('.visit-details-btn');
+        detailButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const visitId = this.getAttribute('data-visit-id');
+                const detailsRow = document.getElementById(`visit-details-row-${visitId}`);
+                
+                if (detailsRow.classList.contains('hidden')) {
+                    // Close any open rows first
+                    document.querySelectorAll('.visit-details-row').forEach(row => {
+                        if (!row.classList.contains('hidden')) {
+                            row.classList.add('hidden');
+                        }
+                    });
+                    
+                    // Open this row
+                    detailsRow.classList.remove('hidden');
+                    this.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hide';
+                    
+                    // Reset other buttons
+                    detailButtons.forEach(otherBtn => {
+                        if (otherBtn !== this) {
+                            otherBtn.innerHTML = '<i class="fas fa-eye mr-1"></i> View';
+                        }
+                    });
+                } else {
+                    // Close this row
+                    detailsRow.classList.add('hidden');
+                    this.innerHTML = '<i class="fas fa-eye mr-1"></i> View';
+                }
+            });
+        });
+        
+
+        // Mobile view details toggle - Enhanced for better UX
+        const mobileDetailButtons = document.querySelectorAll('.visit-details-btn-mobile');
+        mobileDetailButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const visitId = this.getAttribute('data-visit-id');
+                const detailsSection = document.getElementById(`visit-details-mobile-${visitId}`);
+                
+                // Close any other open mobile details first for better UX
+                document.querySelectorAll('[id^="visit-details-mobile-"]').forEach(section => {
+                    if (section.id !== `visit-details-mobile-${visitId}` && !section.classList.contains('hidden')) {
+                        section.classList.add('hidden');
+                        
+                        // Reset other buttons
+                        const otherButton = document.querySelector(`.visit-details-btn-mobile[data-visit-id="${section.id.replace('visit-details-mobile-', '')}"]`);
+                        if (otherButton) {
+                            otherButton.innerHTML = '<i class="fas fa-eye mr-1"></i> View Details';
+                        }
+                    }
+                });
+                
+                if (detailsSection.classList.contains('hidden')) {
+                    // Show details
+                    detailsSection.classList.remove('hidden');
+                    this.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hide Details';
+                    
+                    // Scroll into view for better UX
+                    setTimeout(() => {
+                        detailsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
+                } else {
+                    // Hide details
+                    detailsSection.classList.add('hidden');
+                    this.innerHTML = '<i class="fas fa-eye mr-1"></i> View Details';
+                }
+            });
+        });
+        
+        // Updated search and filter functionality with date filtering
+        const searchInput = document.getElementById('search-visits');
+        const filterDate = document.getElementById('filter-date');
+        
+        function filterVisits() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const dateFilter = filterDate.value;
+            
+            // Calculate date ranges for filtering
+            const today = new Date();
+            let dateThreshold = null;
+            
+            if (dateFilter === 'last-month') {
+                dateThreshold = new Date(today);
+                dateThreshold.setMonth(today.getMonth() - 1);
+            } else if (dateFilter === 'last-3-months') {
+                dateThreshold = new Date(today);
+                dateThreshold.setMonth(today.getMonth() - 3);
+            } else if (dateFilter === 'last-6-months') {
+                dateThreshold = new Date(today);
+                dateThreshold.setMonth(today.getMonth() - 6);
+            } else if (dateFilter === 'last-year') {
+                dateThreshold = new Date(today);
+                dateThreshold.setFullYear(today.getFullYear() - 1);
+            }
+            
+            // Desktop rows
+            const visitRows = document.querySelectorAll('tbody tr:not(.visit-details-row)');
+            visitRows.forEach(row => {
+                const detailsRow = row.nextElementSibling;
+                const doctor = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                const reason = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                const visitDateStr = row.getAttribute('data-visit-date');
+                const visitDate = new Date(visitDateStr);
+                
+                const searchMatch = doctor.includes(searchTerm) || reason.includes(searchTerm);
+                const dateMatch = dateFilter === 'all' || (dateThreshold && visitDate >= dateThreshold);
+                
+                if (searchMatch && dateMatch) {
+                    row.classList.remove('hidden');
+                    if (detailsRow) detailsRow.classList.remove('hidden-parent');
+                } else {
+                    row.classList.add('hidden');
+                    if (detailsRow) {
+                        detailsRow.classList.add('hidden-parent');
+                        detailsRow.classList.add('hidden');
+                    }
+                }
+            });
+            
+            // Mobile cards
+            const visitCards = document.querySelectorAll('.md\\:hidden > div');
+            visitCards.forEach(card => {
+                const doctor = card.querySelector('.text-xs.text-surface-500').textContent.toLowerCase();
+                const reason = card.querySelector('.text-sm.font-medium').textContent.toLowerCase();
+                const visitDateStr = card.getAttribute('data-visit-date');
+                const visitDate = new Date(visitDateStr);
+                
+                const searchMatch = doctor.includes(searchTerm) || reason.includes(searchTerm);
+                const dateMatch = dateFilter === 'all' || (dateThreshold && visitDate >= dateThreshold);
+                
+                if (searchMatch && dateMatch) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+        
+        searchInput.addEventListener('input', filterVisits);
+        filterDate.addEventListener('change', filterVisits);
+    });
+</script>
+
+<style>
+    /* Form styling */
+    .form-input, .form-select {
+        @apply w-full rounded-lg border border-surface-300 text-surface-800 py-2 px-3 focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition duration-150;
+        font-size: 0.95rem;
+    }
+    
+    .form-input::placeholder {
+        @apply text-surface-400 text-sm;
+    }
+    
+    /* Button styling */
+    .btn-outline {
+        @apply px-4 py-2 rounded-xl border border-surface-300 text-surface-700 hover:bg-surface-100 hover:text-brand-600 transition duration-150 inline-flex items-center justify-center;
+    }
+    
+    .btn-sm {
+        @apply px-3 py-1.5 text-sm rounded-lg;
+    }
+    
+    .btn-primary {
+        @apply px-4 py-2 rounded-xl bg-brand-600 text-white hover:bg-brand-700 transition duration-150 inline-flex items-center justify-center;
+    }
+    
+    /* Hide rows with hidden parents */
+    .hidden-parent {
+        display: none !important;
+    }
+    
+    /* Better padding for form elements on mobile */
+    @media (max-width: 640px) {
+        .form-input, .form-select {
+            @apply py-2.5 px-3;
+            font-size: 16px; /* Prevent zoom on iOS */
+        }
+        
+        /* Better spacing for mobile cards */
+        .md\:hidden > div {
+            @apply py-3;
+        }
+        
+        /* Fix mobile animation */
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        /* Better grid for vital signs on very small screens */
+        @media (max-width: 360px) {
+            .grid-cols-3 {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    }
+    
+    /* Animation for expanding sections */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

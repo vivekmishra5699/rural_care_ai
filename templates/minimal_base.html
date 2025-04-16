@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Fix for mobile zoom issues - ensure proper viewport settings -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RuralCare AI - Patient Portal</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#e6f0ff',
+                            100: '#cce0ff',
+                            200: '#99c1ff',
+                            300: '#66a2ff',
+                            400: '#3383ff',
+                            500: '#0064ff',
+                            600: '#0050cc',
+                            700: '#003b99',
+                            800: '#002766',
+                            900: '#001233',
+                        },
+                        surface: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            300: '#d1d5db',
+                            400: '#9ca3af',
+                            500: '#6b7280',
+                            600: '#4b5563',
+                            700: '#374151',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                        accent: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Manrope', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                        '3xl': '2rem',
+                        '4xl': '3rem',
+                    },
+                    boxShadow: {
+                        'smooth': '0 2px 10px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.04)',
+                        'smooth-lg': '0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.03)',
+                        'smooth-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
+                        'inner-smooth': 'inset 0 1px 2px rgba(0, 0, 0, 0.06)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '200% 0' },
+                            '100%': { backgroundPosition: '-200% 0' },
+                        }
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+                    },
+                    fontSize: {
+                        'xs': '0.75rem',     // 12px
+                        'sm': '0.875rem',    // 14px
+                        'base': '1rem',      // 16px
+                        'lg': '1.125rem',    // 18px
+                        'xl': '1.25rem',     // 20px
+                        '2xl': '1.5rem',     // 24px 
+                        '3xl': '1.875rem',   // 30px
+                        '4xl': '2.25rem',    // 36px
+                    },
+                },
+            },
+            // Mobile-first approach for responsive design
+            screens: {
+                'xs': '375px',
+                'sm': '640px',
+                'md': '768px',
+                'lg': '1024px',
+                'xl': '1280px',
+                '2xl': '1536px',
+                '3xl': '1920px',
+                '4xl': '2560px',
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            html {
+                scroll-behavior: smooth;
+                font-size: 16px; /* Base font size for mobile */
+            }
+            
+            body {
+                @apply bg-gradient-to-br from-surface-50 to-surface-100 text-surface-800 font-sans min-h-screen;
+                background-attachment: fixed;
+                overflow-x: hidden;
+                width: 100%;
+            }
+            
+            /* Subtle pattern overlay */
+            .pattern-overlay {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            }
+            
+            /* Subtle decoration shapes */
+            .shape {
+                @apply absolute opacity-20 pointer-events-none;
+            }
+
+            /* Ensure proper font sizes on different device sizes */
+            @screen sm {
+                html { font-size: 14px; }
+            }
+            @screen md {
+                html { font-size: 15px; }
+            }
+            @screen lg {
+                html { font-size: 16px; }
+            }
+            @screen xl {
+                html { font-size: 16px; }
+            }
+            @screen 2xl {
+                html { font-size: 18px; }
+            }
+
+            /* Mobile-specific style overrides */
+            @media (max-width: 640px) {
+                .card-body {
+                    @apply p-3;
+                }
+                
+                .card-header {
+                    @apply p-3;
+                }
+                
+                .responsive-grid-4 {
+                    @apply grid-cols-1;
+                }
+            }
+            
+            /* Improved mobile menu styles */
+            #mobile-menu-content {
+                width: 80%;
+                max-width: 300px;
+            }
+        }
+        
+        @layer components {
+            /* Card components - Fixed border issue */
+            .card {
+                @apply bg-white rounded-2xl shadow-smooth border border-surface-200/60 overflow-hidden transition-all duration-300 hover:shadow-smooth-lg;
+            }
+            
+            /* Update medical history card to remove left border */
+            .medical-history-card {
+                @apply shadow-smooth border border-surface-200/60;
+                border-left: none !important;
+            }
+            
+            /* Add new class for colored indicators instead of borders */
+            .card-indicator {
+                @apply absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl;
+            }
+            
+            .card-indicator-red {
+                @apply bg-red-500;
+            }
+            
+            .card-indicator-amber {
+                @apply bg-amber-500;
+            }
+            
+            .card-indicator-emerald {
+                @apply bg-emerald-500;
+            }
+            
+            .card-indicator-blue {
+                @apply bg-blue-500;
+            }
+            
+            .card-header {
+                @apply p-4 sm:p-5 md:p-6 border-b border-surface-200/60 bg-surface-50/50 font-display font-medium text-lg;
+            }
+            
+            .card-body {
+                @apply p-4 sm:p-5 md:p-6;
+            }
+            
+            /* Buttons */
+            .btn-primary {
+                @apply bg-brand-500 text-white font-medium py-2 px-4 md:py-2.5 md:px-5 rounded-xl 
+                       shadow-sm hover:shadow-md hover:bg-brand-600 
+                       transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-50
+                       active:bg-brand-700;
+            }
+            
+            .btn-secondary {
+                @apply bg-surface-700 text-white font-medium py-2 px-4 md:py-2.5 md:px-5 rounded-xl 
+                       shadow-sm hover:shadow-md hover:bg-surface-800 
+                       transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-surface-700 focus:ring-opacity-50;
+            }
+            
+            .btn-accent {
+                @apply bg-accent-500 text-white font-medium py-2 px-4 md:py-2.5 md:px-5 rounded-xl 
+                       shadow-sm hover:shadow-md hover:bg-accent-600 
+                       transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-accent-500 focus:ring-opacity-50;
+            }
+            
+            .btn-outline {
+                @apply bg-transparent border-2 border-brand-500 text-brand-600 hover:bg-brand-50 
+                       font-medium py-1.5 px-4 md:py-2 md:px-5 rounded-xl transition-all duration-300 ease-in-out 
+                       hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-opacity-30;
+            }
+            
+            .btn-danger {
+                @apply bg-red-500 text-white font-medium py-2 px-4 md:py-2.5 md:px-5 rounded-xl 
+                       shadow-sm hover:shadow-md hover:bg-red-600 
+                       transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50;
+            }
+            
+            .btn-sm {
+                @apply py-1 px-2 text-xs sm:py-1.5 sm:px-3 sm:text-sm;
+            }
+            
+            /* Nav Pills */
+            .nav-pill {
+                @apply flex px-3 py-2 md:px-5 md:py-3 rounded-xl text-surface-700 bg-white border border-surface-200
+                       transition-all duration-200 font-medium shadow-sm hover:shadow-md
+                       hover:bg-surface-50 focus:outline-none text-sm md:text-base;
+            }
+            
+            .nav-pill.active {
+                @apply border-brand-500 bg-brand-50 text-brand-700 shadow-md;
+            }
+            
+            /* Badges */
+            .badge {
+                @apply inline-flex items-center px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-full text-xs font-medium;
+            }
+            
+            .badge-primary {
+                @apply bg-brand-100 text-brand-800;
+            }
+            
+            .badge-success {
+                @apply bg-green-100 text-green-800;
+            }
+            
+            .badge-warning {
+                @apply bg-amber-100 text-amber-800;
+            }
+            
+            .badge-info {
+                @apply bg-blue-100 text-blue-800;
+            }
+            
+            .badge-error {
+                @apply bg-red-100 text-red-800;
+            }
+            
+            /* Avatar */
+            .avatar-circle {
+                @apply flex items-center justify-center rounded-full font-semibold text-lg md:text-xl text-white
+                       bg-gradient-to-br from-brand-500 to-brand-600 shadow-sm;
+            }
+            
+            /* Stat card */
+            .stat-card {
+                @apply bg-white p-4 md:p-5 rounded-2xl border border-surface-200/60 
+                       shadow-smooth transition-all duration-300 ease-in-out hover:shadow-smooth-lg;
+            }
+            
+            .stat-title {
+                @apply text-surface-500 text-xs md:text-sm font-medium;
+            }
+            
+            .stat-value {
+                @apply text-2xl md:text-3xl font-semibold font-display mt-1 text-surface-900;
+            }
+            
+            /* Icons */
+            .icon-circle {
+                @apply flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full
+                       bg-gradient-to-br from-brand-50 to-brand-100;
+            }
+            
+            /* Dashboard layout components */
+            .dashboard-section {
+                @apply mb-6 md:mb-8;
+            }
+            
+            .dashboard-title {
+                @apply text-lg md:text-xl font-semibold text-surface-800 mb-3 md:mb-4 font-display;
+            }
+
+            /* Container for large screens */
+            .content-container {
+                @apply w-full mx-auto overflow-x-hidden;
+                max-width: min(95%, 1600px);
+            }
+
+            /* Tab panels for responsive layouts */
+            .tab-panel {
+                @apply flex flex-wrap md:flex-nowrap gap-2 md:gap-3;
+            }
+
+            /* Grid layouts with better responsiveness */
+            .responsive-grid-2 {
+                @apply grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6;
+            }
+
+            .responsive-grid-3 {
+                @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6;
+            }
+
+            .responsive-grid-4 {
+                @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4;
+            }
+
+            /* Improved mobile menu toggle button */
+            .mobile-menu-toggle {
+                @apply fixed top-4 right-4 z-50 p-2 rounded-lg bg-white shadow-md border border-surface-200 text-surface-700;
+            }
+        }
+    </style>
+</head>
+<body class="pattern-overlay">
+    <!-- Subtle decorative shapes -->
+    <div class="shape w-64 h-64 rounded-full bg-gradient-to-r from-brand-300/10 to-brand-500/5 blur-2xl -left-20 top-20"></div>
+    <div class="shape w-96 h-96 rounded-full bg-gradient-to-r from-accent-300/10 to-accent-500/5 blur-3xl -right-32 top-40"></div>
+    <div class="shape w-80 h-80 rounded-full bg-gradient-to-r from-amber-200/10 to-amber-400/5 blur-2xl -bottom-20 -left-20"></div>
+
+    <!-- Modern Floating Header -->
+    <header class="fixed top-0 inset-x-0 z-50 bg-white/80 backdrop-blur-md border-b border-surface-200/50 shadow-sm">
+        <div class="content-container px-4 sm:px-6 mx-auto">
+            <div class="flex justify-between items-center py-2 md:py-3">
+                <a href="{{ url_for('patient_dashboard') }}" class="flex items-center space-x-2">
+                    <div class="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 shadow-sm text-white">
+                        <i class="fas fa-heartbeat text-base md:text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-display font-bold text-lg md:text-xl bg-clip-text text-transparent bg-gradient-to-r from-brand-700 to-brand-500">RuralCare</span>
+                        <span class="text-xs font-semibold text-surface-500 bg-surface-100 py-0.5 px-1.5 rounded ml-1">AI</span>
+                    </div>
+                </a>
+                
+                <!-- Navigation links section -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="{{ url_for('patient_dashboard') }}" class="px-3 py-2 md:px-4 md:py-2 rounded-lg text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                        {% if request.path == url_for('patient_dashboard') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                        <i class="fas fa-home mr-2 text-brand-500"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ url_for('patient_visits') }}" class="px-3 py-2 md:px-4 md:py-2 rounded-lg text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                        {% if request.path == url_for('patient_visits') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                        <i class="fas fa-clipboard-list mr-2 text-brand-500"></i>
+                        <span>Visits</span>
+                    </a>
+                    <a href="{{ url_for('edit_patient_profile') }}" class="px-3 py-2 md:px-4 md:py-2 rounded-lg text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                        {% if request.path == url_for('edit_patient_profile') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                        <i class="fas fa-user-edit mr-2 text-brand-500"></i>
+                        <span>Profile</span>
+                    </a>
+                    <a href="{{ url_for('patient_logout') }}" class="ml-2 px-3 py-2 md:px-4 md:py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition duration-150 flex items-center font-medium">
+                        <i class="fas fa-sign-out-alt mr-1.5"></i>
+                        <span>Logout</span>
+                    </a>
+                </nav>
+                
+                <!-- Mobile menu button - FIXED id to be consistent -->
+                <button id="mobile-menu-toggle" class="md:hidden p-2 rounded-lg text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="fixed inset-0 z-40 transform transition-transform duration-300 ease-in-out translate-x-full md:hidden">
+        <div class="absolute inset-0 bg-surface-900/50 backdrop-blur-sm" id="mobile-menu-backdrop"></div>
+        <div id="mobile-menu-content" class="absolute right-0 top-0 bottom-0 w-4/5 max-w-xs bg-white shadow-xl flex flex-col transform transition-transform duration-300 ease-in-out">
+            <div class="flex items-center justify-between p-4 border-b border-surface-200">
+                <span class="font-display font-bold text-lg text-surface-800">Menu</span>
+                <button id="close-mobile-menu" class="p-2 rounded-lg text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <!-- Mobile menu navigation -->
+            <nav class="flex flex-col p-4 space-y-2 overflow-y-auto">
+                <a href="{{ url_for('patient_dashboard') }}" class="px-4 py-3 rounded-xl text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                    {% if request.path == url_for('patient_dashboard') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                    <i class="fas fa-home w-6 text-brand-500"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('patient_visits') }}" class="px-4 py-3 rounded-xl text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                    {% if request.path == url_for('patient_visits') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                    <i class="fas fa-clipboard-list w-6 text-brand-500"></i>
+                    <span>Visits</span>
+                </a>
+                <a href="{{ url_for('edit_patient_profile') }}" class="px-4 py-3 rounded-xl text-surface-600 hover:text-brand-600 hover:bg-surface-100 transition duration-150 flex items-center font-medium
+                    {% if request.path == url_for('edit_patient_profile') %}bg-surface-100 text-brand-600 border border-surface-200{% endif %}">
+                    <i class="fas fa-user-edit w-6 text-brand-500"></i>
+                    <span>Profile</span>
+                </a>
+                <div class="border-t border-surface-200 my-2 pt-2">
+                    <a href="{{ url_for('patient_logout') }}" class="px-4 py-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition duration-150 flex items-center font-medium">
+                        <i class="fas fa-sign-out-alt w-6"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content Area - Better spacing for all screens -->
+    <div class="content-container px-3 sm:px-6 pt-16 md:pt-24 pb-16 md:pb-20 relative z-10 mx-auto">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message flex items-center p-3 mb-4 rounded-xl bg-blue-50 border-l-4 border-blue-500 text-blue-700 shadow-sm animate-fade-in text-sm sm:text-base transition-opacity duration-500">
+                        <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Custom JS - FIXED mobile menu functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality - FIXED with consistent ID naming
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuContent = document.getElementById('mobile-menu-content');
+            const closeMobileMenu = document.getElementById('close-mobile-menu');
+            const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+            
+            // Function to open mobile menu
+            function openMobileMenu() {
+                document.body.classList.add('overflow-hidden'); // Prevent background scrolling
+                mobileMenu.classList.remove('translate-x-full');
+                console.log("Menu opened"); // For debugging
+            }
+            
+            // Function to close mobile menu
+            function closeMobileMenuFunc() {
+                document.body.classList.remove('overflow-hidden'); // Re-enable scrolling
+                mobileMenu.classList.add('translate-x-full');
+                console.log("Menu closed"); // For debugging
+            }
+            
+            // Add click event to toggle button
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openMobileMenu();
+                });
+            }
+            
+            // Close button event
+            if (closeMobileMenu) {
+                closeMobileMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeMobileMenuFunc();
+                });
+            }
+            
+            // Backdrop click to close
+            if (mobileMenuBackdrop) {
+                mobileMenuBackdrop.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeMobileMenuFunc();
+                });
+            }
+            
+            // Close menu when navigation links are clicked
+            if (mobileMenuContent) {
+                const menuLinks = mobileMenuContent.querySelectorAll('a');
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', closeMobileMenuFunc);
+                });
+            }
+            
+            // Auto-dismiss flash messages
+            const flashMessages = document.querySelectorAll('.flash-message');
+            if (flashMessages.length > 0) {
+                flashMessages.forEach(message => {
+                    // Auto dismiss after 3 seconds
+                    setTimeout(() => {
+                        message.style.opacity = '0';
+                        setTimeout(() => {
+                            message.style.display = 'none';
+                        }, 500);
+                    }, 3000);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

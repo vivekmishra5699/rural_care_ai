@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeIn">
+    <div>
+        <h2 class="mb-1"><i class="fas fa-bell me-2"></i>Alerts & Notifications</h2>
+        <p class="text-muted mb-0">Important updates and patient information</p>
+    </div>
+    <div>
+        <button class="btn btn-outline-primary" id="markAllRead">
+            <i class="fas fa-check-double me-2"></i>Mark All as Read
+        </button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle text-danger me-2"></i>
+                    <h5 class="mb-0">Critical Alerts</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for alert in alerts %}
+        {% if alert.type == 'critical' %}
+        <div class="list-group-item list-group-item-action p-3 animate__animated animate__fadeIn alert-item {% if not alert.read %}unread{% endif %}" 
+             data-alert-id="{{ alert.id }}">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1 text-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    {{ alert.message }}
+                </h6>
+                <small class="text-muted">{{ alert.timestamp }}</small>
+            </div>
+            <div class="mt-2 d-flex justify-content-end">
+                <button class="btn btn-sm btn-outline-primary me-2 view-alert-btn">
+                    <i class="fas fa-eye me-1"></i>View Details
+                </button>
+                <button class="btn btn-sm btn-outline-secondary mark-read-btn">
+                    <i class="fas fa-check me-1"></i>Mark as Read
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    <h5 class="mb-0">Warnings</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for alert in alerts %}
+        {% if alert.type == 'warning' %}
+        <div class="list-group-item list-group-item-action p-3 animate__animated animate__fadeIn alert-item {% if not alert.read %}unread{% endif %}" 
+             data-alert-id="{{ alert.id }}">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1 text-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ alert.message }}
+                </h6>
+                <small class="text-muted">{{ alert.timestamp }}</small>
+            </div>
+            <div class="mt-2 d-flex justify-content-end">
+                <button class="btn btn-sm btn-outline-primary me-2 view-alert-btn">
+                    <i class="fas fa-eye me-1"></i>View Details
+                </button>
+                <button class="btn btn-sm btn-outline-secondary mark-read-btn">
+                    <i class="fas fa-check me-1"></i>Mark as Read
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white py-3">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    <h5 class="mb-0">Information</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="list-group list-group-flush">
+        {% for alert in alerts %}
+        {% if alert.type == 'info' %}
+        <div class="list-group-item list-group-item-action p-3 animate__animated animate__fadeIn alert-item {% if not alert.read %}unread{% endif %}" 
+             data-alert-id="{{ alert.id }}">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1 text-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {{ alert.message }}
+                </h6>
+                <small class="text-muted">{{ alert.timestamp }}</small>
+            </div>
+            <div class="mt-2 d-flex justify-content-end">
+                <button class="btn btn-sm btn-outline-primary me-2 view-alert-btn">
+                    <i class="fas fa-eye me-1"></i>View Details
+                </button>
+                <button class="btn btn-sm btn-outline-secondary mark-read-btn">
+                    <i class="fas fa-check me-1"></i>Mark as Read
+                </button>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Alert Details Modal -->
+<div class="modal fade" id="alertDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-bell text-primary me-2"></i>
+                    Alert Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="alertContent"></div>
+                <div class="text-muted mt-3">
+                    <small id="alertTimestamp"></small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="modalMarkRead" data-alert-id="">
+                    <i class="fas fa-check me-1"></i>Mark as Read
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .alert-item {
+        transition: all 0.3s ease;
+    }
+    
+    .alert-item.unread {
+        border-left: 4px solid var(--primary-color);
+        background-color: rgba(63, 81, 181, 0.05);
+    }
+    
+    .alert-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize alert modals
+        const alertDetailsModal = new bootstrap.Modal(document.getElementById('alertDetailsModal'));
+        const alertContent = document.getElementById('alertContent');
+        const alertTimestamp = document.getElementById('alertTimestamp');
+        const modalMarkRead = document.getElementById('modalMarkRead');
+        
+        // View alert button handlers
+        const viewAlertBtns = document.querySelectorAll('.view-alert-btn');
+        viewAlertBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const alertItem = this.closest('.alert-item');
+                const alertId = alertItem.dataset.alertId;
+                const alertMessage = alertItem.querySelector('h6').textContent.trim();
+                const timestamp = alertItem.querySelector('small').textContent.trim();
+                
+                alertContent.innerHTML = `<p class="alert alert-primary">${alertMessage}</p>
+                                        <p>This is additional information that would normally be displayed for this alert.</p>`;
+                alertTimestamp.textContent = `Alert generated: ${timestamp}`;
+                modalMarkRead.dataset.alertId = alertId;
+                
+                alertDetailsModal.show();
+            });
+        });
+        
+        // Mark as read button handlers
+        const markReadBtns = document.querySelectorAll('.mark-read-btn');
+        markReadBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const alertItem = this.closest('.alert-item');
+                markAsRead(alertItem);
+            });
+        });
+        
+        // Modal mark as read button
+        modalMarkRead.addEventListener('click', function() {
+            const alertId = this.dataset.alertId;
+            const alertItem = document.querySelector(`.alert-item[data-alert-id="${alertId}"]`);
+            markAsRead(alertItem);
+            alertDetailsModal.hide();
+        });
+        
+        // Mark all as read button
+        const markAllReadBtn = document.getElementById('markAllRead');
+        markAllReadBtn.addEventListener('click', function() {
+            const unreadAlerts = document.querySelectorAll('.alert-item.unread');
+            unreadAlerts.forEach(alert => {
+                markAsRead(alert);
+            });
+        });
+        
+        function markAsRead(alertItem) {
+            alertItem.classList.remove('unread');
+            const markReadBtn = alertItem.querySelector('.mark-read-btn');
+            markReadBtn.innerHTML = '<i class="fas fa-check-double me-1"></i>Read';
+            markReadBtn.disabled = true;
+            
+            // Update alert status
+            const alertId = alertItem.dataset.alertId;
+            // In a real app, you would send an AJAX request to update the database
+            console.log(`Marked alert ${alertId} as read`);
+            
+            // Update UI to reflect the alert is read
+            updateAlertCount();
+        }
+        
+        function updateAlertCount() {
+            const unreadCount = document.querySelectorAll('.alert-item.unread').length;
+            const badgeElement = document.querySelector('.notification-badge .badge');
+            
+            if (badgeElement) {
+                if (unreadCount > 0) {
+                    badgeElement.textContent = unreadCount;
+                    badgeElement.style.display = 'block';
+                } else {
+                    badgeElement.style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
